@@ -18,6 +18,9 @@ $result = pg_query($db, "SELECT * from team;");
 	</head>
 	<body>
 		<h1>Database page</h1>
-		<p><?= $result ?></p>
+		<ul><?php 
+			while ($row = pg_fetch_row($result)) {
+ 			 ?><li>"First name: <?= $row[0] ?> Last name: <?= $row[1] ?>"</li> <?php
+} ?></ul>
 	</body>
 </html>
