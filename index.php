@@ -14,3 +14,10 @@ if (!$db) {
  
 $result = pg_query($db, "SELECT statement goes here");
 ?>
+<html>
+	<head>
+	</head>
+	<body>
+		<h1>Database page</h1>
+	</body>
+</html>
