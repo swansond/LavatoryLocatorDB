@@ -12,12 +12,13 @@ if (!$db) {
    exit;
 }
  
-$result = pg_query($db, "SELECT statement goes here");
+$result = pg_query($db, "SELECT * from team;");
 ?>
 <html>
 	<head>
 	</head>
 	<body>
 		<h1>Database page</h1>
+		<p><?= $result ?></p>
 	</body>
 </html>
