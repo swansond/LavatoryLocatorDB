@@ -8,10 +8,10 @@ function pg_connection_string() {
 # Establish db connection
 $db = pg_connect(pg_connection_string());
 if (!$db) {
-   echo "Database connection error."
+   echo "Database connection error.";
    exit;
 }
- 
+echo "So far so good";
 $result = pg_query($db, "SELECT * from team;");
 ?>
 <html>
