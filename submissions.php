@@ -7,11 +7,10 @@ function pg_connection_string() {
 
 $db = pg_connect(pg_connection_string());
 if (!$db) {
-   echo "Database connection error.";
-   exit;
+   die("Database connection error.");
 }
 
-$result = pg_query($db, 'select * from toilets');
+$result = pg_query($db, 'select * from bathroom');
 $toilets = array();
 while ($row = pg_fetch_row($result)) {
 	$toilets[] = $row;
@@ -26,29 +25,29 @@ while ($row = pg_fetch_row($result)) {
 	<body>
 		<div id='main'>
 			<h1>LavatoryLocator Submissions</h1>
-			<form action='submit.php' method='POST'>
+			<form action='submitReview.php' method='POST'>
 				<div id='form'>
-				<p> Choose a bathroom to review:
-					<select name='toilet'>
-				<?php
-				foreach ($toilets as $row) { ?>
-					<option><?= "$row[3] Floor $row[4]" ?></option>
-				<?php } ?>
-			</select>
-				</p>
-				<p> Rate the bathroom out of 5:
-					<select> name='rating'>
-						<option>1</option>
-						<option>2</option>
-						<option>3</option>
-						<option>4</option>
-						<option>5</option>
-					</select>
-				</p>
-				<p>
-				<textarea name='review' rows='20' cols='50'>Type your comments here.</textarea>
-				</p>
-				<input type='submit' value="Submit">
+					<p> Choose a bathroom to review:
+						<select name='toilet'>
+							<?php
+							foreach ($toilets as $row) { ?>
+								<option value='<?= $row[0] ?>'><?= "$row[2] Floor $row[3]" ?></option>
+							<?php } ?>
+						</select>
+					</p>
+					<p> Rate the bathroom out of 5:
+						<select> name='rating'>
+							<option>1</option>
+							<option>2</option>
+							<option>3</option>
+							<option>4</option>
+							<option>5</option>
+						</select>
+					</p>
+					<p>
+						<textarea name='review' rows='20' cols='50'>Type your comments here.</textarea>
+					</p>
+					<input type='submit' value="Submit">
 				</div>
 			</form>
 		</div>
