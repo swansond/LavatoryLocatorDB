@@ -8,7 +8,7 @@
   <div>
     Query: <input type="text" name="query" size="200" /> <br />
     <input type="submit" />
-  <div>
+  </div>
 </form>
 </body>
 </html>
