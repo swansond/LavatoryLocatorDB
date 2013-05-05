@@ -25,6 +25,7 @@ const MIN_RATING = 'minRating';
 const LAVA_TYPE = 'lavaType';
 
 // Definitions for database names
+const LAVA_ID_DB = 'lavatory_id';
 const LAVA_TYPE_DB = 'lavatory_type';
 const BLDG_ID_DB = 'building_id';
 const BLDG_NAME_DB = 'building_name';
@@ -132,20 +133,21 @@ function distanceFilter($result) {
     
     // Fetch the next row as an associative array
     while ($next = pg_fetch_array($result, NULL, PGSQL_ASSOC)) {
-        $lavaLong = $next[$LAVA_LONG_DB];
-        $lavaLat = $next[$LAVA_LONG_DB];
+        $lavaLong = $next[LAVA_LONG_DB];
+        $lavaLat = $next[LAVA_LONG_DB];
         
         $distance = getDistance(deg2rad($locationLat), deg2rad($locationLong),
             deg2rad($lavaLat), deg2rad($lavaLong));
             
         if ($distance <= $maxDist) {
             // Then we can add this row to the results
-            $newEntry = array('building' => $next[$BLDG_NAME_DB],
-                'room' => $next[$ROOM_NAME_DB],
+            $newEntry = array('lid' => $next[LAVA_ID_DB],
+                'building' => $next[BLDG_NAME_DB],
+                'room' => $next[ROOM_NAME_DB],
                 'distance' => $distance,
-                'avgRating' => $next[$RATE_TOTAL_DB] / $next[$NUM_REVS_DB],
-                'reviews' => $next[$NUM_REVS_DB],
-                'type' => $next[$LAVA_TYPE_DB]);
+                'avgRating' => $next[RATE_TOTAL_DB] / $next[NUM_REVS_DB],
+                'reviews' => $next[NUM_REVS_DB],
+                'type' => $next[LAVA_TYPE_DB]);
             array_push($returnArr['lavatories'], $newEntry);
         }
     }
