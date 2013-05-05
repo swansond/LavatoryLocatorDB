@@ -6,6 +6,15 @@
 *  @author Aasav Prakash
 */
 
+
+$lid = $_GET['lid'];
+$uid = $_GET['uid'];
+
+if (!$lid || !$uid) {
+    header('HTTP/1.1 400 Invalid Request');
+    die('HTTP/1.1 400 Invalid Request: Missing required parameters');
+}
+
 /**
  * @return the string used to connect to the postgres server
  */
@@ -22,7 +31,7 @@ if (!$db) {
 }
 
 // Check if the user already has a review
-$checkQuery = "SELECT * FROM Review WHERE lavatory_id='$lID' AND user_id='$userID'";
+$checkQuery = "SELECT * FROM Review WHERE lavatory_id='$lid' AND user_id='$uid'";
 $checkResult = pg_query($db, $checkQuery);
 if (!$checkResult) {
     header('HTTP/1.1 500 Server Error');
