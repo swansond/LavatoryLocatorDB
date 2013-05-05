@@ -15,37 +15,38 @@ function pg_connection_string() {
 }
 
 // Definitions for parameter names
-$BLDG_NAME = 'bldgName';
-$ROOM_NAME = 'roomNumber';
-$FLOOR_NUM = 'floor';
-$LOC_LONG = 'locationLong';
-$LOC_LAT = 'locationLat';
-$MAX_DIST = 'maxDist';
-$MIN_RATING = 'minRating';
-$LAVA_TYPE = 'lavaType';
+const BLDG_NAME = 'bldgName';
+const ROOM_NAME = 'roomNumber';
+const FLOOR_NUM = 'floor';
+const LOC_LONG = 'locationLong';
+const LOC_LAT = 'locationLat';
+const MAX_DIST = 'maxDist';
+const MIN_RATING = 'minRating';
+const LAVA_TYPE = 'lavaType';
 
 // Definitions for database names
-$LAVA_TYPE_DB = 'lavatory_type';
-$BLDG_ID_DB = 'building_id';
-$BLDG_NAME_DB = 'building_name';
-$ROOM_NAME_DB = 'room_number';
-$FLOOR_NUM_DB = 'floor';
-$NUM_REVS_DB = 'num_reviews';
-$RATE_TOTAL_DB = 'rating_total';
-$LAVA_LONG_DB = 'Lavatory.longitude';
-$LAVA_LAT_DB = 'Lavatory.latitude';
+const LAVA_ID_DB = 'lavatory_id';
+const LAVA_TYPE_DB = 'lavatory_type';
+const BLDG_ID_DB = 'building_id';
+const BLDG_NAME_DB = 'building_name';
+const ROOM_NAME_DB = 'room_number';
+const FLOOR_NUM_DB = 'floor';
+const NUM_REVS_DB = 'num_reviews';
+const RATE_TOTAL_DB = 'rating_total';
+const LAVA_LONG_DB = 'Lavatory.longitude';
+const LAVA_LAT_DB = 'Lavatory.latitude';
 
 // Earth's radius, in meters: used for calculating distances
-$EARTH_RAD = 6371000;
+const EARTH_RAD = 6371000;
 
-if (!isset($_GET[$BLDG_NAME])
-    && !isset($_GET[$ROOM_NAME])
-    && !isset($_GET[$FLOOR_NUM])
-    && !isset($_GET[$LOC_LONG])
-    && !isset($_GET[$LOC_LAT])
-    && !isset($_GET[$MAX_DIST])
-    && !isset($_GET[$MIN_RATING])
-    && !isset($_GET[$BATH_TYPE])) {
+if (!isset($_GET[BLDG_NAME])
+    && !isset($_GET[ROOM_NAME])
+    && !isset($_GET[FLOOR_NUM])
+    && !isset($_GET[LOC_LONG])
+    && !isset($_GET[LOC_LAT])
+    && !isset($_GET[MAX_DIST])
+    && !isset($_GET[MIN_RATING])
+    && !isset($_GET[BATH_TYPE])) {
     header('HTTP/1.1 400 Invalid Request');
     die("HTTP/1.1 400 Invalid Request: no parameters given");
 }
@@ -80,36 +81,36 @@ print json_encode($filteredResult);
  * @return a suitable query string given the GET_ parameters. 
  */
 function getQueryString() {
-    $bldgName = $_GET[$BLDG_NAME];
-    $roomNumber = $_GET[$ROOM_NUM];
-    $floor = $_GET[$FLOOR_NUM];
-    $minRating = $_GET[$MIN_RATING];
-    $lavatoryType = $_GET[$BATH_TYPE];
+    $bldgName = $_GET[BLDG_NAME];
+    $roomNumber = $_GET[ROOM_NUM];
+    $floor = $_GET[FLOOR_NUM];
+    $minRating = $_GET[MIN_RATING];
+    $lavatoryType = $_GET[BATH_TYPE];
     
     // First we construct each predicate
     if (isset($bldgName)) {
-        $bldgPred = " AND Building.$BLDG_NAME_DB ILIKE '%$bldgName%'";
+        $bldgPred = ' AND Building.' . BLDG_NAME_DB . " ILIKE '%$bldgName%'";
     }
     if (isset($roomNumber)) {
-        $roomPred = " AND Lavatory.$ROOM_NAME_DB = '$roomNumber'";
+        $roomPred = ' AND Lavatory.' . ROOM_NAME_DB . " = '$roomNumber'";
     }
     if (isset($floor)) {
-        $floorPred = " AND Lavatory.$FLOOR_NUM_DB = '$floor'";
+        $floorPred = ' AND Lavatory.' . FLOOR_NUM_DB . " = '$floor'";
     }
     if (isset($minRating)) {
-        $ratingPred = " AND Lavatory.$RATE_TOTAL_DB / Lavatory.$NUM_REVS_DB"
-                    . " >= $minRating";
+        $ratingPred = ' AND Lavatory.' . RATE_TOTAL_DB . ' / Lavatory.'
+                    . $NUM_REVS_DB . " >= $minRating";
     }
     if (isset($lavatoryType)) {
-        $typePred = " AND Lavatory.$LAVA_TYPE_DB = '$lavatoryType'";
+        $typePred = ' AND Lavatory.' . LAVA_TYPE_DB . " = '$lavatoryType'";
     }
     
     // Now we construct the query
     // Must join with Building if bldgPred is specified
-    $query = "SELECT $BLDG_NAME_DB, $ROOM_NAME_DB, $LAT_DB, $LONG_DB, "
-           . "$RATE_TOTAL_DB, $NUM_REVS_DB, $LAVA_TYPE_DB "
-           . 'FROM Lavatory, Building '
-           . "WHERE Lavatory.$BLDG_ID_DB = Building.$BLDG_ID_DB"
+    $query = 'SELECT ' . BLDG_NAME_DB . ', ' . ROOM_NAME_DB . ', ' . LAT_DB
+           . ', ' . LONG_DB . ', ' . RATE_TOTAL_DB . ', ' . NUM_REVS_DB
+           . ', ' . LAVA_TYPE_DB . ' FROM Lavatory, Building '
+           . 'WHERE Lavatory.' . BLDG_ID_DB . ' = Building.' . BLDG_ID_DB
            . $bldgPred . $roomPred . $floorPred . $ratingPred . $typePred . ';';
     
     return $query;
@@ -132,20 +133,21 @@ function distanceFilter($result) {
     
     // Fetch the next row as an associative array
     while ($next = pg_fetch_array($result, NULL, PGSQL_ASSOC)) {
-        $lavaLong = $next[$LAVA_LONG_DB];
-        $lavaLat = $next[$LAVA_LONG_DB];
+        $lavaLong = $next[LAVA_LONG_DB];
+        $lavaLat = $next[LAVA_LONG_DB];
         
         $distance = getDistance(deg2rad($locationLat), deg2rad($locationLong),
             deg2rad($lavaLat), deg2rad($lavaLong));
             
         if ($distance <= $maxDist) {
             // Then we can add this row to the results
-            $newEntry = array('building' => $next[$BLDG_NAME_DB],
-                'room' => $next[$ROOM_NAME_DB],
+            $newEntry = array('lid' => $next[LAVA_ID_DB],
+                'building' => $next[BLDG_NAME_DB],
+                'room' => $next[ROOM_NAME_DB],
                 'distance' => $distance,
-                'avgRating' => $next[$RATE_TOTAL_DB] / $next[$NUM_REVS_DB],
-                'reviews' => $next[$NUM_REVS_DB],
-                'type' => $next[$LAVA_TYPE_DB]);
+                'avgRating' => $next[RATE_TOTAL_DB] / $next[NUM_REVS_DB],
+                'reviews' => $next[NUM_REVS_DB],
+                'type' => $next[LAVA_TYPE_DB]);
             array_push($returnArr['lavatories'], $newEntry);
         }
     }
