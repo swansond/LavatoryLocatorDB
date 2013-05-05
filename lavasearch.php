@@ -46,7 +46,7 @@ if (!isset($_GET[BLDG_NAME])
     && !isset($_GET[LOC_LAT])
     && !isset($_GET[MAX_DIST])
     && !isset($_GET[MIN_RATING])
-    && !isset($_GET[BATH_TYPE])) {
+    && !isset($_GET[LAVA_TYPE])) {
     header('HTTP/1.1 400 Invalid Request');
     die("HTTP/1.1 400 Invalid Request: no parameters given");
 }
@@ -85,34 +85,43 @@ function getQueryString() {
     $roomNumber = $_GET[ROOM_NUM];
     $floor = $_GET[FLOOR_NUM];
     $minRating = $_GET[MIN_RATING];
-    $lavatoryType = $_GET[BATH_TYPE];
+    $lavatoryType = $_GET[LAVA_TYPE];
     
     // First we construct each predicate
     if (isset($bldgName)) {
+        echo "building name pass\n";
         $bldgPred = ' AND Building.' . BLDG_NAME_DB . " ILIKE '%$bldgName%'";
+        print "bldg pred: $bldgPred";
     }
     if (isset($roomNumber)) {
+        echo "room number pass\n";
         $roomPred = ' AND Lavatory.' . ROOM_NAME_DB . " = '$roomNumber'";
+        print "roomPred: $roomPred";
     }
     if (isset($floor)) {
+        echo "floor pass\n";
         $floorPred = ' AND Lavatory.' . FLOOR_NUM_DB . " = '$floor'";
+        print "floorPred: $floorPred";
     }
     if (isset($minRating)) {
+        echo "min rating pass \n";
         $ratingPred = ' AND Lavatory.' . RATE_TOTAL_DB . ' / Lavatory.'
                     . $NUM_REVS_DB . " >= $minRating";
+        echo "ratingPred: $ratingPred";
     }
     if (isset($lavatoryType)) {
+        echo "lavatory type pass\n";
         $typePred = ' AND Lavatory.' . LAVA_TYPE_DB . " = '$lavatoryType'";
+        echo "typePred: $typePred";
     }
     
     // Now we construct the query
-    // Must join with Building if bldgPred is specified
     $query = 'SELECT ' . BLDG_NAME_DB . ', ' . ROOM_NAME_DB . ', ' . LAVA_LAT_DB
            . ', ' . LAVA_LONG_DB . ', ' . RATE_TOTAL_DB . ', ' . NUM_REVS_DB
            . ', ' . LAVA_TYPE_DB . ' FROM Lavatory, Building '
            . 'WHERE Lavatory.' . BLDG_ID_DB . ' = Building.' . BLDG_ID_DB
            . $bldgPred . $roomPred . $floorPred . $ratingPred . $typePred . ';';
-    
+    print "Query: $query\n";
     return $query;
 }
 
