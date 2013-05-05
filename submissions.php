@@ -1,6 +1,12 @@
 <?php
-# This function reads your DATABASE_URL configuration automatically set by Heroku
-# the return value is a string that will work with pg_connect
+/**
+*  This page allows the user to select a bathroom and submit a review for it.
+*  @author Aasav Prakash
+*/
+
+/**
+ * @return the string used to connect to the postgres server
+ */
 function pg_connection_string() {
 	return "dbname=dc9160dninujhs host=ec2-23-21-85-233.compute-1.amazonaws.com port=5432 user=todxuvhszxmpnh password=fKeepFUZjdUgrXhifoZsTDsyFG sslmode=require";
 }
@@ -10,10 +16,10 @@ if (!$db) {
    die("Database connection error.");
 }
 
-$result = pg_query($db, 'select * from bathroom');
-$toilets = array();
+$result = pg_query($db, 'select * from Lavatory');
+$lavs = array();
 while ($row = pg_fetch_row($result)) {
-	$toilets[] = $row;
+	$lavs[] = $row;
 }
 ?>
 <!DOCTYPE html>
@@ -25,13 +31,22 @@ while ($row = pg_fetch_row($result)) {
 	<body>
 		<div id='main'>
 			<h1>LavatoryLocator Submissions</h1>
-			<form action='submitReview.php' method='POST'>
+			<form action='submitreview.php' method='POST'>
 				<div id='form'>
 					<p> Choose a bathroom to review:
 						<select name='toilet'>
 							<?php
-							foreach ($toilets as $row) { ?>
-								<option value='<?= $row[0] ?>'><?= "$row[2] Floor $row[3]" ?></option>
+							// Place the lavatories into the dropdown
+							foreach ($lavs as $row) { 
+								$bid = $row[2];
+								// Since building names are not stored in Lavatory table, 
+								// we grab it from the Building table
+								$bldgQuery = "select building_name from Building where building_id='$bid'";
+								$bldg = pg_fetch_row(pg_query($db, $bldgQuery))[0];
+								$lid = $row[0];
+								$floor = $row[4];
+								?>
+								<option value='<?= $lid ?>'><?= "$floor Floor $bldg" ?></option>
 							<?php } ?>
 						</select>
 					</p>
