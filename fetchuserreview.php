@@ -31,7 +31,7 @@ if (!$db) {
 }
 
 // Check if the user already has a review
-$checkQuery = "SELECT * FROM Review WHERE lavatory_id='$lid' AND user_id='$uid'";
+$checkQuery = "SELECT * FROM Review WHERE lavatory_id=$lid AND user_id=$uid";
 $checkResult = pg_query($db, $checkQuery);
 if (!$checkResult) {
     header('HTTP/1.1 500 Server Error');
