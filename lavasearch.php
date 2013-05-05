@@ -22,18 +22,18 @@ $LOC_LONG = 'locationLong';
 $LOC_LAT = 'locationLat';
 $MAX_DIST = 'maxDist';
 $MIN_RATING = 'minRating';
-$BATH_TYPE = 'bathroomType';
+$LAVA_TYPE = 'lavaType';
 
 // Definitions for database names
-$BATH_TYPE_DB = 'bathroom_type';
+$LAVA_TYPE_DB = 'lavatory_type';
 $BLDG_ID_DB = 'building_id';
 $BLDG_NAME_DB = 'building_name';
 $ROOM_NAME_DB = 'room_number';
 $FLOOR_NUM_DB = 'floor';
 $NUM_REVS_DB = 'num_reviews';
 $RATE_TOTAL_DB = 'rating_total';
-$LONG_DB = 'longitude';
-$LAT_DB = 'latitude';
+$LAVA_LONG_DB = 'Lavatory.longitude';
+$LAVA_LAT_DB = 'Lavatory.latitude';
 
 // Earth's radius, in meters: used for calculating distances
 $EARTH_RAD = 6371000;
@@ -76,7 +76,7 @@ print json_encode($filteredResult);
 
 /**
  * This function takes the global variables from the GET_ array and returns
- * a suitable query over the bathroom database.
+ * a suitable query over the lavatory database.
  * @return a suitable query string given the GET_ parameters. 
  */
 function getQueryString() {
@@ -84,33 +84,32 @@ function getQueryString() {
     $roomNumber = $_GET[$ROOM_NUM];
     $floor = $_GET[$FLOOR_NUM];
     $minRating = $_GET[$MIN_RATING];
-    $bathroomType = $_GET[$BATH_TYPE];
+    $lavatoryType = $_GET[$BATH_TYPE];
     
     // First we construct each predicate
     if (isset($bldgName)) {
-        $bldgPred = " AND Bathroom.$BLDG_ID_DB = Building.$BLDG_ID_DB"
-                  . " AND Building.$BLDG_NAME_DB ILIKE %$bldgName%";
+        $bldgPred = " AND Building.$BLDG_NAME_DB ILIKE '%$bldgName%'";
     }
     if (isset($roomNumber)) {
-        $roomPred = " AND Bathroom.$ROOM_NAME_DB = $roomNumber";
+        $roomPred = " AND Lavatory.$ROOM_NAME_DB = '$roomNumber'";
     }
     if (isset($floor)) {
-        $floorPred = " AND Bathroom.$FLOOR_NUM_DB = $floor";
+        $floorPred = " AND Lavatory.$FLOOR_NUM_DB = '$floor'";
     }
     if (isset($minRating)) {
-        $ratingPred = " AND Bathroom.$RATE_TOTAL_DB / Bathroom.$NUM_REVS_DB"
+        $ratingPred = " AND Lavatory.$RATE_TOTAL_DB / Lavatory.$NUM_REVS_DB"
                     . " >= $minRating";
     }
-    if (isset($bathroomType)) {
-        $typePred = " AND Bathroom.$BATH_TYPE_DB = $bathroomType";
+    if (isset($lavatoryType)) {
+        $typePred = " AND Lavatory.$LAVA_TYPE_DB = '$lavatoryType'";
     }
     
     // Now we construct the query
     // Must join with Building if bldgPred is specified
     $query = "SELECT $BLDG_NAME_DB, $ROOM_NAME_DB, $LAT_DB, $LONG_DB, "
-           . "$RATE_TOTAL_DB, $NUM_REVS_DB, $BATH_TYPE_DB "
-           . 'FROM Bathroom, Building '
-           . "WHERE Bathroom.$BLDG_ID_DB = Building.$BLDG_ID_DB"
+           . "$RATE_TOTAL_DB, $NUM_REVS_DB, $LAVA_TYPE_DB "
+           . 'FROM Lavatory, Building '
+           . "WHERE Lavatory.$BLDG_ID_DB = Building.$BLDG_ID_DB"
            . $bldgPred . $roomPred . $floorPred . $ratingPred . $typePred . ';';
     
     return $query;
@@ -133,22 +132,21 @@ function distanceFilter($result) {
     
     // Fetch the next row as an associative array
     while ($next = pg_fetch_array($result, NULL, PGSQL_ASSOC)) {
-        $bathLong = $next['longitude'];
-        $bathLat = $next['latitude'];
+        $lavaLong = $next[$LAVA_LONG_DB];
+        $lavaLat = $next[$LAVA_LONG_DB];
         
         $distance = getDistance(deg2rad($locationLat), deg2rad($locationLong),
-            deg2rad($bathLat), deg2rad($bathLong));
+            deg2rad($lavaLat), deg2rad($lavaLong));
             
         if ($distance <= $maxDist) {
             // Then we can add this row to the results
-            $newEntry = array('building' => $next['building_name'],
-                'room' => $next['room_number'],
+            $newEntry = array('building' => $next[$BLDG_NAME_DB],
+                'room' => $next[$ROOM_NAME_DB],
                 'distance' => $distance,
-                'avgRating' => $next['rating_total'] / $next['num_reviews'],
-                'reviews' => $next['num_reviews'],
-                'type' => $next['bathroom_type']);
+                'avgRating' => $next[$RATE_TOTAL_DB] / $next[$NUM_REVS_DB],
+                'reviews' => $next[$NUM_REVS_DB],
+                'type' => $next[$LAVA_TYPE_DB]);
             array_push($returnArr['lavatories'], $newEntry);
-            $returnArr['lavatories'][] = array();
         }
     }
     return $returnArr;
