@@ -107,8 +107,8 @@ function getQueryString() {
     
     // Now we construct the query
     // Must join with Building if bldgPred is specified
-    $query = 'SELECT ' . BLDG_NAME_DB . ', ' . ROOM_NAME_DB . ', ' . LAT_DB
-           . ', ' . LONG_DB . ', ' . RATE_TOTAL_DB . ', ' . NUM_REVS_DB
+    $query = 'SELECT ' . BLDG_NAME_DB . ', ' . ROOM_NAME_DB . ', ' . LAVA_LAT_DB
+           . ', ' . LAVA_LONG_DB . ', ' . RATE_TOTAL_DB . ', ' . NUM_REVS_DB
            . ', ' . LAVA_TYPE_DB . ' FROM Lavatory, Building '
            . 'WHERE Lavatory.' . BLDG_ID_DB . ' = Building.' . BLDG_ID_DB
            . $bldgPred . $roomPred . $floorPred . $ratingPred . $typePred . ';';
