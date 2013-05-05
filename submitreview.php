@@ -5,7 +5,7 @@
 *  @author Aasav Prakash
 */
 
-$lID = $_POST['lid'];
+$lid = $_POST['lid'];
 $rating = $_POST['rating'];
 $review = pg_escape_string($_POST['review']);
 $userId = $_POST['uid'];
@@ -32,7 +32,7 @@ if (!$db) {
 }
 
 // Check if the user already has a review
-$checkQuery = "SELECT * FROM Review WHERE lavatory_id='$lID' AND user_id='$userId'";
+$checkQuery = "SELECT rating FROM Review WHERE lavatory_id=$lid AND user_id=$userId";
 $checkResult = pg_query($db, $checkQuery);
 if (!$checkResult) {
     header('HTTP/1.1 500 Server Error');
@@ -43,19 +43,71 @@ if (pg_num_rows($checkResult) == 0) {
     // User does not have review; add a new one
     $query = "INSERT INTO Review (lavatory_id, user_id, datetime, review, 
                                   rating, helpfulness)
-              VALUES($lID, $userId, $now, $review, $rating, 0)";
-    $result = pg_query($db, $query);
-    if (!$result) {
-        header('HTTP/1.1 500 Server Error');
-        die('HTTP/1.1 500 Server Error: unable to query the server');
-    }    
-} else {
-    // User has an existing review; update it
-    $query = "UPDATE Review SET datetime='$now', review='$review', rating='$rating'
-              WHERE lavatory_id='$lID' AND user_id='$userId'";
+              VALUES($lid, $userId, $now, $review, $rating, 0)";
     $result = pg_query($db, $query);
     if (!$result) {
         header('HTTP/1.1 500 Server Error');
         die('HTTP/1.1 500 Server Error: unable to query the server');
     }
+    // Now we get the current review information from the Lavatory table
+    $lavInfo = fetchLavatoryInfo($db, $lid);
+    $lavNumRevs = $lavInfo[0];
+    $lavTotalRating = $lavInfo[1];
+    // Update the info
+    $lavNumRevs++;
+    $lavTotalRating += $rating;
+    $lavUpdateQuery = "UPDATE Lavatory 
+                       SET num_reviews=$lavNumRevs, rating_total=$lavTotalRating
+                       WHERE lavatory_id=$lid";
+    $updateResult = pg_query($db, $lavUpdateQuery);
+    if (!$updateResult) {
+      header('HTTP/1.1 500 Server Error');
+      die('HTTP/1.1 500 Server Error: unable to query the server');
+    }
+} else {
+    // User has an existing review; update it
+    // But first we need the value of the old rating
+    $oldRating = pg_fetch_row($checkResult)[0];
+    // Now update the Review table
+    $query = "UPDATE Review 
+              SET datetime=$now, review='$review', rating=$rating, $helpfulness=0
+              WHERE lavatory_id=$lid AND user_id=$userId";
+    $result = pg_query($db, $query);
+        header('HTTP/1.1 500 Server Error');
+    if (!$result) {
+        die('HTTP/1.1 500 Server Error: unable to query the server');
+    }
+    // Fetch and Update the rating in the Lavatory table
+    // Now we get the current review information from the Lavatory table
+    $lavInfo = fetchLavatoryInfo($db, $lid);
+    $lavNumRevs = $lavInfo[0];
+    $lavTotalRating = $lavInfo[1];
+    // Update the lavatory entry
+    $lavTotalRating = $lavTotalRating - $oldRating + $rating;
+    $lavUpdateQuery = "UPDATE Lavatory 
+                       SET rating_total=$lavTotalRating
+                       WHERE lavatory_id=$lid";
+    $updateResult = pg_query($db, $lavUpdateQuery);
+    if (!$updateResult) {
+      header('HTTP/1.1 500 Server Error');
+      die('HTTP/1.1 500 Server Error: unable to query the server');
+    }
+}
+
+/**
+*  Function to get the info for a specific lavatory
+*  @param db The postgre database object to use for the query
+*  @param lid The lavatory ID to use  
+*  @return A row entry holding the number of reviews and total rating
+*/
+function fetchLavatoryInfo($db, $lid) {
+  $lavQuery = "SELECT num_reviews, rating_total FROM Lavatory 
+               WHERE lavatory_id=$lid";
+  $lavResult = pg_query($db, $lavQuery);
+  if (!$lavResult) {
+      header('HTTP/1.1 500 Server Error');
+      die('HTTP/1.1 500 Server Error: unable to query the server');
+  }
+  $lavInfo = pg_fetch_row($lavResult);
+  return $lavInfo;
 }

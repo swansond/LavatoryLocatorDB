@@ -1,16 +1,17 @@
 <?php
 /**
-*  This page accepts POST parameters and returns the user's review 
-*  for the bathroom if one exists; nothing if one does not exist.
-*  Returns reviews in JSON format. 
+*  This page accepts POST paramaters to add a bathroom to the database.
 *  @author Aasav Prakash
 */
 
+$uid = $_POST['uid'];
+$buildingName = $_POST['buildingName'];
+$floor = $_POST['floor'];
+$lavaType = $_POST['lavaType'];
+$long = $_POST['longitude'];
+$lat = $_POST['latitude'];
 
-$lid = $_GET['lid'];
-$uid = $_GET['uid'];
-
-if (!$lid || !$uid) {
+if (!$uid || !$buildingName || !$floor || !$lavaType || !$long || !$lat) {
     header('HTTP/1.1 400 Invalid Request');
     die('HTTP/1.1 400 Invalid Request: Missing required parameters');
 }
@@ -30,16 +31,12 @@ if (!$db) {
    die('HTTP/1.1 500 Server Error: unable to connect to the server');
 }
 
-// Check if the user already has a review
-$checkQuery = "SELECT * FROM Review WHERE lavatory_id=$lid AND user_id=$uid";
-$checkResult = pg_query($db, $checkQuery);
-if (!$checkResult) {
+$request = "User ID: $uid; Building: $buildingName; Floor: $floor; Type: $lavaType; Longitude: $long, Latitude: $lat";
+
+// request type and request itself
+$query = "INSERT INTO Queue VALUES ("Add lavatory", $request)";
+$result = pg_query($db, $query);
+if (!$result) {
     header('HTTP/1.1 500 Server Error');
     die('HTTP/1.1 500 Server Error: unable to query the server');
 }
-
-if (pg_num_rows($checkResult) != 0) { 
-    // User has a review; return it
-    $reviewRow = pg_fetch_row($checkResult);
-    print json_encode($reviewRow);
-} // If one does not exist, we return nothing.
