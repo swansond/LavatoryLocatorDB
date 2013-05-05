@@ -135,7 +135,7 @@ function distanceFilter($result) {
         $bathLong = $next['longitude'];
         $bathLat = $next['latitude'];
         
-        $distance = getDist(deg2rad($locationLat), deg2rad($locationLong),
+        $distance = getDistance(deg2rad($locationLat), deg2rad($locationLong),
             deg2rad($bathLat), deg2rad($bathLong));
             
         if ($distance <= $maxDist) {
