@@ -46,7 +46,7 @@ if (!isset($_GET[BLDG_NAME])
     && !isset($_GET[LOC_LAT])
     && !isset($_GET[MAX_DIST])
     && !isset($_GET[MIN_RATING])
-    && !isset($_GET[BATH_TYPE])) {
+    && !isset($_GET[LAVA_TYPE])) {
     header('HTTP/1.1 400 Invalid Request');
     die("HTTP/1.1 400 Invalid Request: no parameters given");
 }
@@ -85,7 +85,7 @@ function getQueryString() {
     $roomNumber = $_GET[ROOM_NUM];
     $floor = $_GET[FLOOR_NUM];
     $minRating = $_GET[MIN_RATING];
-    $lavatoryType = $_GET[BATH_TYPE];
+    $lavatoryType = $_GET[LAVA_TYPE];
     
     // First we construct each predicate
     if (isset($bldgName)) {
@@ -116,7 +116,6 @@ function getQueryString() {
     }
     
     // Now we construct the query
-    // Must join with Building if bldgPred is specified
     $query = 'SELECT ' . BLDG_NAME_DB . ', ' . ROOM_NAME_DB . ', ' . LAVA_LAT_DB
            . ', ' . LAVA_LONG_DB . ', ' . RATE_TOTAL_DB . ', ' . NUM_REVS_DB
            . ', ' . LAVA_TYPE_DB . ' FROM Lavatory, Building '
