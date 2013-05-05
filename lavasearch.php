@@ -61,7 +61,8 @@ $query = getQueryString();
 $result = pg_query($db, pg_escape_string($db, $query));
 if (!$result) {
    header('HTTP/1.1 500 Server Error');
-   die('HTTP/1.1 500 Server Error: unable to query the server');
+   die('HTTP/1.1 500 Server Error: unable to query the server' .
+       "\nQuery: $query");
 }
 
 // Filter out everything that's too far and transform the result
