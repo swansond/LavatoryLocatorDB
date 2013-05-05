@@ -8,10 +8,10 @@
 $lID = $_POST['lid'];
 $rating = $_POST['rating'];
 $review = pg_escape_string($_POST['review']);
-$userID = $_POST['uid'];
+$userId = $_POST['uid'];
 $now = new DateTime().getTimestamp();
 
-if (!$lID || !$rating || !$review || !$userID) {
+if (!$lID || !$rating || !$review || !$userId) {
     header('HTTP/1.1 400 Invalid Request');
 	die('HTTP/1.1 400 Invalid Request: Missing required parameters');
 }
@@ -32,7 +32,7 @@ if (!$db) {
 }
 
 // Check if the user already has a review
-$checkQuery = "SELECT * FROM Review WHERE lavatory_id='$lID' AND user_id='$userID'";
+$checkQuery = "SELECT * FROM Review WHERE lavatory_id='$lID' AND user_id='$userId'";
 $checkResult = pg_query($db, $checkQuery);
 if (!$checkResult) {
     header('HTTP/1.1 500 Server Error');
@@ -43,7 +43,7 @@ if (pg_num_rows($checkResult) == 0) {
     // User does not have review; add a new one
     $query = "INSERT INTO Review (lavatory_id, user_id, datetime, review, 
                                   rating, helpfulness)
-              VALUES($lID, $userID, $now, $review, $rating, 0)";
+              VALUES($lID, $userId, $now, $review, $rating, 0)";
     $result = pg_query($db, $query);
     if (!$result) {
         header('HTTP/1.1 500 Server Error');
@@ -52,7 +52,7 @@ if (pg_num_rows($checkResult) == 0) {
 } else {
     // User has an existing review; update it
     $query = "UPDATE Review SET datetime='$now', review='$review', rating='$rating'
-              WHERE lavatory_id='$lID' AND user_id='$userID'";
+              WHERE lavatory_id='$lID' AND user_id='$userId'";
     $result = pg_query($db, $query);
     if (!$result) {
         header('HTTP/1.1 500 Server Error');

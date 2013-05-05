@@ -1,17 +1,18 @@
 <?php
 /**
 *  Fetches reviews for a specific lavatory in "pages."
-*  Reviews returned as JSON.
+*  Accepts GET parameters.
+*  Returns reviews as JSON.
 *  @author Aasav Prakash
 */
 
 // The number of reviews per page of results
 $PAGE_SIZE = 10;
 
-$lid =        $_POST['lid'];
-$pageNo =     $_POST['pageNo'];
-$sortMethod = $_POST['sortparam'];
-$sortDir =    $_POST['direction'];
+$lid =        $_GET['lid'];
+$pageNo =     $_GET['pageNo'];
+$sortMethod = $_GET['sortparam'];
+$sortDir =    $_GET['direction'];
 
 if (!$lid || !$pageNo || !$sortMethod || !$sortDir) {
     header('HTTP/1.1 400 Invalid Request');
