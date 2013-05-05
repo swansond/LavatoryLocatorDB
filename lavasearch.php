@@ -94,14 +94,14 @@ function getQueryString() {
         $roomPred = " AND Bathroom.$ROOM_NAME_DB = $roomNumber";
     }
     if (isset($floor)) {
-        $floorPred = " AND Bathroom.$FLOOR_NUM_DB = $floor"
+        $floorPred = " AND Bathroom.$FLOOR_NUM_DB = $floor";
     }
     if (isset($minRating)) {
         $ratingPred = " AND Bathroom.$RATE_TOTAL_DB / Bathroom.$NUM_REVS_DB"
                     . " >= $minRating";
     }
     if (isset($bathroomType)) {
-        $typePred = " AND Bathroom.$BATH_TYPE_DB = $bathroomType"
+        $typePred = " AND Bathroom.$BATH_TYPE_DB = $bathroomType";
     }
     
     // Now we construct the query
@@ -121,6 +121,7 @@ function getQueryString() {
  *     any, and
  * (2) Transforms the result into an associative array that's able to be
  *     encoded into JSON.
+ * @return an associative array as described in (2)
  */
 function distanceFilter($result) {
     $locationLong = $_GET[LOC_LONG];
@@ -157,6 +158,7 @@ function distanceFilter($result) {
  * target coordinates.
  * Uses the wikipedia-prescribed "special case of the Vincenty formula"
  * Argument coordinates must be in radians.
+ * @return the distance from src to target in meters.
  */
 function getDistance($srcLat, $srcLong, $targetLat, $targetLong) {
     $deltaLong = abs($srcLong - $targetLong);
