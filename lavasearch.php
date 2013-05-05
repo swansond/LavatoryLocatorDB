@@ -72,6 +72,7 @@ $filteredResult = distanceFilter($result);
 
 // Return the result as json.
 header('Content-type: application/json');
+print "Query: $query\n";
 print json_encode($filteredResult);
 
 
