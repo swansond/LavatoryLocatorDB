@@ -72,7 +72,6 @@ $filteredResult = distanceFilter($result);
 
 // Return the result as json.
 header('Content-type: application/json');
-print "Query: $query\n";
 print json_encode($filteredResult);
 
 
@@ -90,20 +89,30 @@ function getQueryString() {
     
     // First we construct each predicate
     if (isset($bldgName)) {
+        echo "building name pass\n";
         $bldgPred = ' AND Building.' . BLDG_NAME_DB . " ILIKE '%$bldgName%'";
+        print "bldg pred: $bldgPred";
     }
     if (isset($roomNumber)) {
+        echo "room number pass\n";
         $roomPred = ' AND Lavatory.' . ROOM_NAME_DB . " = '$roomNumber'";
+        print "roomPred: $roomPred";
     }
     if (isset($floor)) {
+        echo "floor pass\n";
         $floorPred = ' AND Lavatory.' . FLOOR_NUM_DB . " = '$floor'";
+        print "floorPred: $floorPred";
     }
     if (isset($minRating)) {
+        echo "min rating pass \n";
         $ratingPred = ' AND Lavatory.' . RATE_TOTAL_DB . ' / Lavatory.'
                     . $NUM_REVS_DB . " >= $minRating";
+        echo "ratingPred: $ratingPred";
     }
     if (isset($lavatoryType)) {
+        echo "lavatory type pass\n";
         $typePred = ' AND Lavatory.' . LAVA_TYPE_DB . " = '$lavatoryType'";
+        echo "typePred: $typePred";
     }
     
     // Now we construct the query
@@ -113,7 +122,7 @@ function getQueryString() {
            . ', ' . LAVA_TYPE_DB . ' FROM Lavatory, Building '
            . 'WHERE Lavatory.' . BLDG_ID_DB . ' = Building.' . BLDG_ID_DB
            . $bldgPred . $roomPred . $floorPred . $ratingPred . $typePred . ';';
-    
+    print "Query: $query\n";
     return $query;
 }
 
