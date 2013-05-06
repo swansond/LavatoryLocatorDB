@@ -43,7 +43,8 @@ while ($row = pg_fetch_row($result)) {
 								// Since building names are not stored in Lavatory table, 
 								// we grab it from the Building table
 								$bldgQuery = "select building_name from Building where building_id=$bid";
-								$bldg = pg_fetch_row(pg_query($db, $bldgQuery))[0];
+								$bldgRow = pg_fetch_row(pg_query($db, $bldgQuery));
+								$bldg = $bldgRow[0];
 								$lid = $row[0];
 								$floor = $row[4];
 								?>
