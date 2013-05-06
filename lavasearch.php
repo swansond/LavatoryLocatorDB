@@ -125,6 +125,10 @@ function distanceFilter($result) {
                 'type' => $next['lavatory_type'],
                 'latitude' => $next['latitude'],
                 'longitude' => $next['longitude']);
+                
+            if ($next['num_reviews'] == 0) {
+                $newEntry['avgRating'] = 0;
+            }
             array_push($returnArr['lavatories'], $newEntry);
         }
     }
