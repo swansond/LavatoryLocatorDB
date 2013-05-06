@@ -116,7 +116,10 @@ function distanceFilter($result) {
         $distance = getDistance(deg2rad($locationLat), deg2rad($locationLong),
             deg2rad($lavaLat), deg2rad($lavaLong));
 
-        if ($distance <= $maxDist) {
+        if ($distance <= $maxDist
+            || !isset($_GET['locationLong'])
+            || !isset($_GET['locationLat'])
+            || !isset($_GET['maxDist'])) {
             // Then we can add this row to the results
             $newEntry = array('lid' => $next['lavatory_id'],
                 'building' => $next['building_name'],
