@@ -13,7 +13,8 @@ function pg_connection_string() {
 
 $db = pg_connect(pg_connection_string());
 if (!$db) {
-   die("Database connection error.");
+	header('HTTP/1.1 500 Server Error');
+	die('HTTP/1.1 500 Server Error: unable to connect to the server');
 }
 
 $result = pg_query($db, 'select * from Lavatory');
@@ -41,7 +42,7 @@ while ($row = pg_fetch_row($result)) {
 								$bid = $row[2];
 								// Since building names are not stored in Lavatory table, 
 								// we grab it from the Building table
-								$bldgQuery = "select building_name from Building where building_id='$bid'";
+								$bldgQuery = "select building_name from Building where building_id=$bid";
 								$bldg = pg_fetch_row(pg_query($db, $bldgQuery))[0];
 								$lid = $row[0];
 								$floor = $row[4];
