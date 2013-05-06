@@ -88,6 +88,8 @@ function getQueryString() {
            . 'FROM Lavatory, Building '
            . 'WHERE Lavatory.building_id = Building.building_id'
            . $bldgPred . $roomPred . $floorPred . $ratingPred . $typePred . ';';
+           
+    printf("Query: $query\n");
     return $query;
 }
 
