@@ -88,7 +88,7 @@ function getQueryString() {
     
     // First we construct each predicate
     if (isset($bldgName)) {
-        $bldgPred = ' AND Building.' . BLDG_NAME_DB . " ILIKE '%$bldgName%'";
+        $bldgPred = ' AND ' . BLDG_NAME_DB . " ILIKE '%$bldgName%'";
     }
     if (isset($roomNumber)) {
         $roomPred = ' AND ' . ROOM_NAME_DB . " = '$roomNumber'";
