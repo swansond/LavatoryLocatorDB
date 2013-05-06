@@ -17,7 +17,7 @@ function pg_connection_string() {
 if (!isset($_GET['bldgName'])
     && !isset($_GET['roomNumber'])
     && !isset($_GET['floor'])
-    && !isset($_GET['locationLong'])
+    && !isset($_GET['locationLat'])
     && !isset($_GET['locationLong'])
     && !isset($_GET['maxDist'])
     && !isset($_GET['minRating'])
@@ -80,9 +80,10 @@ function getQueryString() {
     }
     
     // Now we construct the query
-    $query = 'SELECT Building.building_name, Lavatory.room_number, '
-           . 'Lavatory.latitude, Lavatory.longitude, Lavatory.rating_total, '
-           . 'Lavatory.num_reviews, Lavatory.lavatory_type '
+    $query = 'SELECT Lavatory.lavatory_id, Building.building_name, '
+           . 'Lavatory.room_number, Lavatory.latitude, Lavatory.longitude, '
+           . 'Lavatory.rating_total, Lavatory.num_reviews, '
+           . 'Lavatory.lavatory_type '
            . 'FROM Lavatory, Building '
            . 'WHERE Lavatory.building_id = Building.building_id'
            . $bldgPred . $roomPred . $floorPred . $ratingPred . $typePred . ';';
@@ -104,6 +105,9 @@ function distanceFilter($result) {
     $returnArr = array();
     $returnArr['lavatories'] = array();
     
+    printf("locationLong: $locationLong\n");
+    printf("locationLat: $locationLat\n");
+    
     // Fetch the next row as an associative array
     while ($next = pg_fetch_array($result, NULL, PGSQL_ASSOC)) {
         $lavaLong = $next['longitude'];
@@ -112,6 +116,8 @@ function distanceFilter($result) {
         $distance = getDistance(deg2rad($locationLat), deg2rad($locationLong),
             deg2rad($lavaLat), deg2rad($lavaLong));
             
+        printf("lavaLong: $lavaLong\n");
+        printf("lavaLat: $lavaLat\n");
         printf("distance: $distance\n");
         printf("lavatory id: " . $next['lavatory_id'] . "\n");
         
@@ -152,5 +158,7 @@ function getDistance($srcLat, $srcLong, $targetLat, $targetLong) {
         (sin($srcLat) * sin($targetLat)) +
         (cos($srcLat) * cos($targetLat) * cos($deltaLat))
     );
+    
+    printf("atan2(): " . atan2($num, $denom) . "\n");
     return atan2($num, $denom) * $EARTH_RAD;
 }
