@@ -160,5 +160,5 @@ function getDistance($srcLat, $srcLong, $targetLat, $targetLong) {
     );
     
     printf("atan2(): " . atan2($num, $denom) . "\n");
-    return atan2($num, $denom) * $EARTH_RAD;
+    return atan2($x, $y) * $EARTH_RAD;
 }
