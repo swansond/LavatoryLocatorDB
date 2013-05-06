@@ -56,9 +56,17 @@ if (!$result) {
     die('HTTP/1.1 500 Server Error: unable to query the server');
 }
 
-$reviews = array();
-while ($row = pg_fetch_row($result)) {
-    $reviews[] = $row;
+$returnArr = array();
+$returnArr['reviews'] = array();
+while ($next = pg_fetch_array($result, NULL, PGSQL_ASSOC)) {
+    $newEntry = array('rid' => $next['review_id'],
+        'lid' => $next['lavatory_id'],
+        'uid' => $next['user_id'],
+        'datetime' => $next['datetime'],
+        'review' => $next['review'],
+        'rating' => $next['rating'],
+        'helpfulness' => $next['helpfulness']);
+    array_push($returnArr['reviews'] = $newEntry;
 }
 
-print json_encode($reviews);
+print json_encode($returnArr);
