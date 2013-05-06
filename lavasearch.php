@@ -25,14 +25,14 @@ const MIN_RATING = 'minRating';
 const LAVA_TYPE = 'lavaType';
 
 // Definitions for database names
-const LAVA_ID_DB = 'lavatory_id';
-const LAVA_TYPE_DB = 'lavatory_type';
+const LAVA_ID_DB = 'Lavatory.lavatory_id';
+const LAVA_TYPE_DB = 'Lavatory.lavatory_type';
 const BLDG_ID_DB = 'building_id';
-const BLDG_NAME_DB = 'building_name';
-const ROOM_NAME_DB = 'room_number';
-const FLOOR_NUM_DB = 'floor';
-const NUM_REVS_DB = 'num_reviews';
-const RATE_TOTAL_DB = 'rating_total';
+const BLDG_NAME_DB = 'Building.building_name';
+const ROOM_NAME_DB = 'Lavatory.room_number';
+const FLOOR_NUM_DB = 'Lavatory.floor';
+const NUM_REVS_DB = 'Lavatory.num_reviews';
+const RATE_TOTAL_DB = 'Lavatory.rating_total';
 const LAVA_LONG_DB = 'Lavatory.longitude';
 const LAVA_LAT_DB = 'Lavatory.latitude';
 
@@ -91,17 +91,17 @@ function getQueryString() {
         $bldgPred = ' AND Building.' . BLDG_NAME_DB . " ILIKE '%$bldgName%'";
     }
     if (isset($roomNumber)) {
-        $roomPred = ' AND Lavatory.' . ROOM_NAME_DB . " = '$roomNumber'";
+        $roomPred = ' AND ' . ROOM_NAME_DB . " = '$roomNumber'";
     }
     if (isset($floor)) {
-        $floorPred = ' AND Lavatory.' . FLOOR_NUM_DB . " = '$floor'";
+        $floorPred = ' AND ' . FLOOR_NUM_DB . " = '$floor'";
     }
     if (isset($minRating)) {
-        $ratingPred = ' AND Lavatory.' . RATE_TOTAL_DB . ' / Lavatory.'
+        $ratingPred = ' AND ' . RATE_TOTAL_DB . ' / '
                     . $NUM_REVS_DB . " >= $minRating";
     }
     if (isset($lavatoryType)) {
-        $typePred = ' AND Lavatory.' . LAVA_TYPE_DB . " = '$lavatoryType'";
+        $typePred = ' AND ' . LAVA_TYPE_DB . " = '$lavatoryType'";
     }
     
     // Now we construct the query
@@ -136,6 +136,9 @@ function distanceFilter($result) {
         $distance = getDistance(deg2rad($locationLat), deg2rad($locationLong),
             deg2rad($lavaLat), deg2rad($lavaLong));
             
+        printf("distance: $distance\n");
+        printf("lavatory id: " . $next[LAVA_ID_DB] . "\n");
+        
         if ($distance <= $maxDist) {
             // Then we can add this row to the results
             $newEntry = array('lid' => $next[LAVA_ID_DB],
