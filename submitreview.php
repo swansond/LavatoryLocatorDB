@@ -11,7 +11,7 @@ $review = pg_escape_string($_POST['review']);
 $userId = $_POST['uid'];
 $now = new DateTime().getTimestamp();
 
-if (!$lID || !$rating || !$review || !$userId) {
+if (!$lid || !$rating || !$review || !$userId) {
     header('HTTP/1.1 400 Invalid Request');
 	die('HTTP/1.1 400 Invalid Request: Missing required parameters');
 }
@@ -43,7 +43,7 @@ if (pg_num_rows($checkResult) == 0) {
     // User does not have review; add a new one
     $query = "INSERT INTO Review (lavatory_id, user_id, datetime, review, 
                                   rating, helpfulness)
-              VALUES($lid, $userId, $now, $review, $rating, 0)";
+              VALUES ($lid, $userId, $now, $review, $rating, 0)";
     $result = pg_query($db, $query);
     if (!$result) {
         header('HTTP/1.1 500 Server Error');
