@@ -34,7 +34,7 @@ if (!$db) {
 $request = "User ID: $uid; Building: $buildingName; Floor: $floor; Type: $lavaType; Longitude: $long, Latitude: $lat";
 
 // request type and request itself
-$query = "INSERT INTO Queue VALUES ("Add lavatory", $request)";
+$query = "INSERT INTO Queue VALUES ('Add lavatory', $request)";
 $result = pg_query($db, $query);
 if (!$result) {
     header('HTTP/1.1 500 Server Error');
