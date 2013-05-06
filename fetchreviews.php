@@ -66,7 +66,7 @@ while ($next = pg_fetch_array($result, NULL, PGSQL_ASSOC)) {
         'review' => $next['review'],
         'rating' => $next['rating'],
         'helpfulness' => $next['helpfulness']);
-    array_push($returnArr['reviews'] = $newEntry;
+    array_push($returnArr['reviews'], $newEntry);
 }
 
 print json_encode($returnArr);
