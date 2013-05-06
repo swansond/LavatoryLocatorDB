@@ -59,11 +59,10 @@ if (!$db) {
 
 // Get the query based on our parameters
 $query = getQueryString();
-$result = pg_query($db, pg_escape_string($db, $query));
+$result = pg_query($db, $query);
 if (!$result) {
    header('HTTP/1.1 500 Server Error');
-   die('HTTP/1.1 500 Server Error: unable to query the server' .
-       "\nQuery: $query");
+   die('HTTP/1.1 500 Server Error: unable to query the server');
 }
 
 // Filter out everything that's too far and transform the result
@@ -82,37 +81,27 @@ print json_encode($filteredResult);
  */
 function getQueryString() {
     $bldgName = $_GET[BLDG_NAME];
-    $roomNumber = $_GET[ROOM_NUM];
+    $roomNumber = $_GET[ROOM_NAME];
     $floor = $_GET[FLOOR_NUM];
     $minRating = $_GET[MIN_RATING];
     $lavatoryType = $_GET[LAVA_TYPE];
     
     // First we construct each predicate
     if (isset($bldgName)) {
-        echo "building name pass\n";
         $bldgPred = ' AND Building.' . BLDG_NAME_DB . " ILIKE '%$bldgName%'";
-        print "bldg pred: $bldgPred";
     }
     if (isset($roomNumber)) {
-        echo "room number pass\n";
         $roomPred = ' AND Lavatory.' . ROOM_NAME_DB . " = '$roomNumber'";
-        print "roomPred: $roomPred";
     }
     if (isset($floor)) {
-        echo "floor pass\n";
         $floorPred = ' AND Lavatory.' . FLOOR_NUM_DB . " = '$floor'";
-        print "floorPred: $floorPred";
     }
     if (isset($minRating)) {
-        echo "min rating pass \n";
         $ratingPred = ' AND Lavatory.' . RATE_TOTAL_DB . ' / Lavatory.'
                     . $NUM_REVS_DB . " >= $minRating";
-        echo "ratingPred: $ratingPred";
     }
     if (isset($lavatoryType)) {
-        echo "lavatory type pass\n";
         $typePred = ' AND Lavatory.' . LAVA_TYPE_DB . " = '$lavatoryType'";
-        echo "typePred: $typePred";
     }
     
     // Now we construct the query
@@ -121,7 +110,6 @@ function getQueryString() {
            . ', ' . LAVA_TYPE_DB . ' FROM Lavatory, Building '
            . 'WHERE Lavatory.' . BLDG_ID_DB . ' = Building.' . BLDG_ID_DB
            . $bldgPred . $roomPred . $floorPred . $ratingPred . $typePred . ';';
-    print "Query: $query\n";
     return $query;
 }
 
