@@ -122,7 +122,9 @@ function distanceFilter($result) {
                 'distance' => $distance,
                 'avgRating' => $next['rating_total'] / $next['num_reviews'],
                 'reviews' => $next['num_reviews'],
-                'type' => $next['lavatory_type']);
+                'type' => $next['lavatory_type'],
+                'latitude' => $next['latitude'],
+                'longitude' => $next['longitude']);
             array_push($returnArr['lavatories'], $newEntry);
         }
     }
