@@ -59,7 +59,7 @@ function getQueryString() {
     $roomNumber = $_GET['roomNumber'];
     $floor = $_GET['floor'];
     $minRating = $_GET['minRating'];
-    $lavatoryType = $_GET['minRating'];
+    $lavatoryType = $_GET['lavaType'];
     
     // First we construct each predicate
     if (isset($bldgName)) {
@@ -69,7 +69,7 @@ function getQueryString() {
         $roomPred = " AND Lavatory.room_number = '$roomNumber'";
     }
     if (isset($floor)) {
-        $floorPred = " AND Lavatory.floor_number = '$floor'";
+        $floorPred = " AND Lavatory.floor = '$floor'";
     }
     if (isset($minRating)) {
         $ratingPred = ' AND Lavatory.rating_total / Lavatory.num_reviews '
