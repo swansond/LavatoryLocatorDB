@@ -89,7 +89,6 @@ function getQueryString() {
            . 'WHERE Lavatory.building_id = Building.building_id'
            . $bldgPred . $roomPred . $floorPred . $ratingPred . $typePred . ';';
            
-    printf("Query: $query\n");
     return $query;
 }
 
@@ -113,9 +112,14 @@ function distanceFilter($result) {
         $lavaLong = $next['longitude'];
         $lavaLat = $next['latitude'];
         
-        $distance = getDistance(deg2rad($locationLat), deg2rad($locationLong),
-            deg2rad($lavaLat), deg2rad($lavaLong));
-
+        // If the user has supplied a location, calculate distance; else 0
+        if (isset($_GET['locationLong']) && isset($_GET['locationLat'])) {
+            $distance = getDistance(deg2rad($locationLat), deg2rad($locationLong),
+                deg2rad($lavaLat), deg2rad($lavaLong));
+        } else {
+            $distance = 0;
+        }
+        
         if ($distance <= $maxDist
             || !isset($_GET['locationLong'])
             || !isset($_GET['locationLat'])
