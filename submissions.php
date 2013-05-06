@@ -35,7 +35,7 @@ while ($row = pg_fetch_row($result)) {
 			<form action='submitreview.php' method='POST'>
 				<div id='form'>
 					<p> Choose a bathroom to review:
-						<select name='toilet'>
+						<select name='lid'>
 							<?php
 							// Place the lavatories into the dropdown
 							foreach ($lavs as $row) { 
@@ -53,7 +53,7 @@ while ($row = pg_fetch_row($result)) {
 						</select>
 					</p>
 					<p> Rate the bathroom out of 5:
-						<select> name='rating'>
+						<select name='rating'>
 							<option>1</option>
 							<option>2</option>
 							<option>3</option>
@@ -64,6 +64,7 @@ while ($row = pg_fetch_row($result)) {
 					<p>
 						<textarea name='review' rows='20' cols='50'>Type your comments here.</textarea>
 					</p>
+					<input type='hidden' name='uid' value='-1'>
 					<input type='submit' value="Submit">
 				</div>
 			</form>
