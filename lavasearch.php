@@ -20,7 +20,7 @@ if (!isset($_GET['bldgName'])
     && !isset($_GET['locationLat'])
     && !isset($_GET['locationLong'])
     && !isset($_GET['maxDist'])
-    && !isset($_GET['minRating'])
+    && !isset($_GET['lavaType'])
     && !isset($_GET['minRating'])) {
     header('HTTP/1.1 400 Invalid Request');
     die("HTTP/1.1 400 Invalid Request: no parameters given");
@@ -72,7 +72,8 @@ function getQueryString() {
         $floorPred = " AND Lavatory.floor = '$floor'";
     }
     if (isset($minRating)) {
-        $ratingPred = ' AND Lavatory.rating_total / Lavatory.num_reviews '
+        $ratingPred = ' AND Lavatory.num_reviews > 0 '
+                    . 'AND (Lavatory.rating_total / Lavatory.num_reviews) '
                     . " >= $minRating";
     }
     if (isset($lavatoryType)) {
