@@ -105,9 +105,6 @@ function distanceFilter($result) {
     $returnArr = array();
     $returnArr['lavatories'] = array();
     
-    printf("locationLong: $locationLong\n");
-    printf("locationLat: $locationLat\n");
-    
     // Fetch the next row as an associative array
     while ($next = pg_fetch_array($result, NULL, PGSQL_ASSOC)) {
         $lavaLong = $next['longitude'];
@@ -115,12 +112,7 @@ function distanceFilter($result) {
         
         $distance = getDistance(deg2rad($locationLat), deg2rad($locationLong),
             deg2rad($lavaLat), deg2rad($lavaLong));
-            
-        printf("lavaLong: $lavaLong\n");
-        printf("lavaLat: $lavaLat\n");
-        printf("distance: $distance\n");
-        printf("lavatory id: " . $next['lavatory_id'] . "\n");
-        
+
         if ($distance <= $maxDist) {
             // Then we can add this row to the results
             $newEntry = array('lid' => $next['lavatory_id'],
@@ -159,6 +151,5 @@ function getDistance($srcLat, $srcLong, $targetLat, $targetLong) {
         (cos($srcLat) * cos($targetLat) * cos($deltaLat))
     );
     
-    printf("atan2(): " . atan2($num, $denom) . "\n");
     return atan2($x, $y) * $EARTH_RAD;
 }
