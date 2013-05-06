@@ -70,7 +70,7 @@ if (pg_num_rows($checkResult) == 0) {
     $oldRating = $oldRatingRow[0];
     // Now update the Review table
     $query = "UPDATE Review 
-              SET datetime=NOW(), review='$review', rating=$rating, $helpfulness=0
+              SET datetime=NOW(), review='$review', rating=$rating, helpfulness=0
               WHERE lavatory_id=$lid AND user_id=$userId";
     $result = pg_query($db, $query);
         header('HTTP/1.1 500 Server Error');
