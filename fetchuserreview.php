@@ -40,6 +40,15 @@ if (!$checkResult) {
 
 if (pg_num_rows($checkResult) != 0) { 
     // User has a review; return it
-    $reviewRow = pg_fetch_row($checkResult);
-    print json_encode($reviewRow);
+    $userReview = pg_fetch_array($checkResult, NULL, PGSQL_ASSOC);
+    
+    $returnJson = array('rid' => $userReview['review_id'],
+        'lid' => $userReview['lavatory_id'],
+        'uid' => $userReview['user_id'],
+        'datetime' => $userReview['datetime'],
+        'review' => $userReview['review'],
+        'rating' => $userReview['rating'],
+        'helpfulness' => $userReview['helpfulness']);
+    
+    print json_encode($returnJson);
 } // If one does not exist, we return nothing.
