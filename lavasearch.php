@@ -14,39 +14,14 @@ function pg_connection_string() {
          . 'ZjdUgrXhifoZsTDsyFG sslmode=require';
 }
 
-// Definitions for parameter names
-const BLDG_NAME = 'bldgName';
-const ROOM_NAME = 'roomNumber';
-const FLOOR_NUM = 'floor';
-const LOC_LONG = 'locationLong';
-const LOC_LAT = 'locationLat';
-const MAX_DIST = 'maxDist';
-const MIN_RATING = 'minRating';
-const LAVA_TYPE = 'lavaType';
-
-// Definitions for database names
-const LAVA_ID_DB = 'Lavatory.lavatory_id';
-const LAVA_TYPE_DB = 'Lavatory.lavatory_type';
-const BLDG_ID_DB = 'building_id';
-const BLDG_NAME_DB = 'Building.building_name';
-const ROOM_NAME_DB = 'Lavatory.room_number';
-const FLOOR_NUM_DB = 'Lavatory.floor';
-const NUM_REVS_DB = 'Lavatory.num_reviews';
-const RATE_TOTAL_DB = 'Lavatory.rating_total';
-const LAVA_LONG_DB = 'Lavatory.longitude';
-const LAVA_LAT_DB = 'Lavatory.latitude';
-
-// Earth's radius, in meters: used for calculating distances
-const EARTH_RAD = 6371000;
-
-if (!isset($_GET[BLDG_NAME])
-    && !isset($_GET[ROOM_NAME])
-    && !isset($_GET[FLOOR_NUM])
-    && !isset($_GET[LOC_LONG])
-    && !isset($_GET[LOC_LAT])
-    && !isset($_GET[MAX_DIST])
-    && !isset($_GET[MIN_RATING])
-    && !isset($_GET[LAVA_TYPE])) {
+if (!isset($_GET['bldgName'])
+    && !isset($_GET['roomNumber'])
+    && !isset($_GET['floor'])
+    && !isset($_GET['locationLong'])
+    && !isset($_GET['locationLong'])
+    && !isset($_GET['maxDist'])
+    && !isset($_GET['minRating'])
+    && !isset($_GET['minRating'])) {
     header('HTTP/1.1 400 Invalid Request');
     die("HTTP/1.1 400 Invalid Request: no parameters given");
 }
@@ -80,35 +55,36 @@ print json_encode($filteredResult);
  * @return a suitable query string given the GET_ parameters. 
  */
 function getQueryString() {
-    $bldgName = $_GET[BLDG_NAME];
-    $roomNumber = $_GET[ROOM_NAME];
-    $floor = $_GET[FLOOR_NUM];
-    $minRating = $_GET[MIN_RATING];
-    $lavatoryType = $_GET[LAVA_TYPE];
+    $bldgName = $_GET['bldgName'];
+    $roomNumber = $_GET['roomNumber'];
+    $floor = $_GET['floor'];
+    $minRating = $_GET['minRating'];
+    $lavatoryType = $_GET['minRating'];
     
     // First we construct each predicate
     if (isset($bldgName)) {
-        $bldgPred = ' AND ' . BLDG_NAME_DB . " ILIKE '%$bldgName%'";
+        $bldgPred = " AND Building.building_name ILIKE '%$bldgName%'";
     }
     if (isset($roomNumber)) {
-        $roomPred = ' AND ' . ROOM_NAME_DB . " = '$roomNumber'";
+        $roomPred = " AND Lavatory.room_number = '$roomNumber'";
     }
     if (isset($floor)) {
-        $floorPred = ' AND ' . FLOOR_NUM_DB . " = '$floor'";
+        $floorPred = " AND Lavatory.floor_number = '$floor'";
     }
     if (isset($minRating)) {
-        $ratingPred = ' AND ' . RATE_TOTAL_DB . ' / '
-                    . $NUM_REVS_DB . " >= $minRating";
+        $ratingPred = ' AND Lavatory.rating_total / Lavatory.num_reviews '
+                    . " >= $minRating";
     }
     if (isset($lavatoryType)) {
-        $typePred = ' AND ' . LAVA_TYPE_DB . " = '$lavatoryType'";
+        $typePred = " AND Lavatory.lavatory_type = '$lavatoryType'";
     }
     
     // Now we construct the query
-    $query = 'SELECT ' . BLDG_NAME_DB . ', ' . ROOM_NAME_DB . ', ' . LAVA_LAT_DB
-           . ', ' . LAVA_LONG_DB . ', ' . RATE_TOTAL_DB . ', ' . NUM_REVS_DB
-           . ', ' . LAVA_TYPE_DB . ' FROM Lavatory, Building '
-           . 'WHERE Lavatory.' . BLDG_ID_DB . ' = Building.' . BLDG_ID_DB
+    $query = 'SELECT Building.building_name, Lavatory.room_number, '
+           . 'Lavatory.latitude, Lavatory.longitude, Lavatory.rating_total, '
+           . 'Lavatory.num_reviews, Lavatory.lavatory_type '
+           . 'FROM Lavatory, Building '
+           . 'WHERE Lavatory.building_id = Building.building_id'
            . $bldgPred . $roomPred . $floorPred . $ratingPred . $typePred . ';';
     return $query;
 }
@@ -122,32 +98,32 @@ function getQueryString() {
  * @return an associative array as described in (2)
  */
 function distanceFilter($result) {
-    $locationLong = $_GET[LOC_LONG];
-    $locationLat = $_GET[LOC_LAT];
-    $maxDist = $_GET[MAX_DIST];
+    $locationLong = $_GET['locationLong'];
+    $locationLat = $_GET['locationLat'];
+    $maxDist = $_GET['maxDist'];
     $returnArr = array();
     $returnArr['lavatories'] = array();
     
     // Fetch the next row as an associative array
     while ($next = pg_fetch_array($result, NULL, PGSQL_ASSOC)) {
-        $lavaLong = $next[LAVA_LONG_DB];
-        $lavaLat = $next[LAVA_LONG_DB];
+        $lavaLong = $next['longitude'];
+        $lavaLat = $next['latitude'];
         
         $distance = getDistance(deg2rad($locationLat), deg2rad($locationLong),
             deg2rad($lavaLat), deg2rad($lavaLong));
             
         printf("distance: $distance\n");
-        printf("lavatory id: " . $next[LAVA_ID_DB] . "\n");
+        printf("lavatory id: " . $next['lavatory_id'] . "\n");
         
         if ($distance <= $maxDist) {
             // Then we can add this row to the results
-            $newEntry = array('lid' => $next[LAVA_ID_DB],
-                'building' => $next[BLDG_NAME_DB],
-                'room' => $next[ROOM_NAME_DB],
+            $newEntry = array('lid' => $next['lavatory_id'],
+                'building' => $next['building_name'],
+                'room' => $next['room_number'],
                 'distance' => $distance,
-                'avgRating' => $next[RATE_TOTAL_DB] / $next[NUM_REVS_DB],
-                'reviews' => $next[NUM_REVS_DB],
-                'type' => $next[LAVA_TYPE_DB]);
+                'avgRating' => $next['rating_total'] / $next['num_reviews'],
+                'reviews' => $next['num_reviews'],
+                'type' => $next['lavatory_type']);
             array_push($returnArr['lavatories'], $newEntry);
         }
     }
@@ -162,6 +138,7 @@ function distanceFilter($result) {
  * @return the distance from src to target in meters.
  */
 function getDistance($srcLat, $srcLong, $targetLat, $targetLong) {
+    $EARTH_RAD = 6371000;
     $deltaLong = abs($srcLong - $targetLong);
     
     $x = sqrt(
@@ -175,5 +152,5 @@ function getDistance($srcLat, $srcLong, $targetLat, $targetLong) {
         (sin($srcLat) * sin($targetLat)) +
         (cos($srcLat) * cos($targetLat) * cos($deltaLat))
     );
-    return atan2($num, $denom) * EARTH_RAD;
+    return atan2($num, $denom) * $EARTH_RAD;
 }
