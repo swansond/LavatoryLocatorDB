@@ -9,7 +9,6 @@ $lid = $_POST['lid'];
 $rating = $_POST['rating'];
 $review = pg_escape_string($_POST['review']);
 $userId = $_POST['uid'];
-$now = new DateTime().getTimestamp();
 
 if (!$lid || !$rating || !$review || !$userId) {
     header('HTTP/1.1 400 Invalid Request');
@@ -43,7 +42,7 @@ if (pg_num_rows($checkResult) == 0) {
     // User does not have review; add a new one
     $query = "INSERT INTO Review (lavatory_id, user_id, datetime, review, 
                                   rating, helpfulness)
-              VALUES ($lid, $userId, $now, $review, $rating, 0)";
+              VALUES ($lid, $userId, NOW(), $review, $rating, 0)";
     $result = pg_query($db, $query);
     if (!$result) {
         header('HTTP/1.1 500 Server Error');
@@ -67,10 +66,11 @@ if (pg_num_rows($checkResult) == 0) {
 } else {
     // User has an existing review; update it
     // But first we need the value of the old rating
-    $oldRating = pg_fetch_row($checkResult)[0];
+    $oldRatingRow = pg_fetch_row($checkResult);
+    $oldRating = $oldRatingRow[0];
     // Now update the Review table
     $query = "UPDATE Review 
-              SET datetime=$now, review='$review', rating=$rating, $helpfulness=0
+              SET datetime=NOW(), review='$review', rating=$rating, $helpfulness=0
               WHERE lavatory_id=$lid AND user_id=$userId";
     $result = pg_query($db, $query);
         header('HTTP/1.1 500 Server Error');
