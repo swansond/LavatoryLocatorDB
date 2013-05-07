@@ -73,8 +73,8 @@ if (pg_num_rows($checkResult) == 0) {
               SET datetime=NOW(), review='$review', rating=$rating, helpfulness=0
               WHERE lavatory_id=$lid AND user_id=$userId";
     $result = pg_query($db, $query);
-        header('HTTP/1.1 500 Server Update Error');
     if (!$result) {
+	header('HTTP/1.1 500 Server Update Error');
         die('HTTP/1.1 500 Server Error: unable to query the server');
     }
     // Fetch and Update the rating in the Lavatory table
