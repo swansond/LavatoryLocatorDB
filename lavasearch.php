@@ -14,14 +14,14 @@ function pg_connection_string() {
          . 'ZjdUgrXhifoZsTDsyFG sslmode=require';
 }
 
-if (!isset(pg_escape_string($_GET['bldgName']))
-    && !isset(pg_escape_string($_GET['roomNumber']))
-    && !isset(pg_escape_string($_GET['floor']))
-    && !isset(pg_escape_string($_GET['locationLat']))
-    && !isset(pg_escape_string($_GET['locationLong']))
-    && !isset(pg_escape_string($_GET['maxDist']))
-    && !isset(pg_escape_string($_GET['lavaType']))
-    && !isset(pg_escape_string($_GET['minRating']))) {
+if (!isset($_GET['bldgName'])
+    && !isset($_GET['roomNumber'])
+    && !isset($_GET['floor'])
+    && !isset($_GET['locationLat'])
+    && !isset($_GET['locationLong'])
+    && !isset($_GET['maxDist'])
+    && !isset($_GET['lavaType'])
+    && !isset($_GET['minRating'])) {
     header('HTTP/1.1 400 Invalid Request');
     die("HTTP/1.1 400 Invalid Request: no parameters given");
 }
@@ -101,9 +101,9 @@ function getQueryString() {
  * @return an associative array as described in (2)
  */
 function distanceFilter($result) {
-    $locationLong = pg_escape_string($_GET['locationLong']);
-    $locationLat = pg_escape_string($_GET['locationLat']);
-    $maxDist = pg_escape_string($_GET['maxDist']);
+    $locationLong = $_GET['locationLong'];
+    $locationLat = $_GET['locationLat'];
+    $maxDist = $_GET['maxDist'];
     $returnArr = array();
     $returnArr['lavatories'] = array();
     
@@ -113,8 +113,8 @@ function distanceFilter($result) {
         $lavaLat = $next['latitude'];
         
         // If the user has supplied a location, calculate distance; else 0
-        if (isset(pg_escape_string($_GET['locationLong']))
-            && isset(pg_escape_string($_GET['locationLat']))) {
+        if (isset($_GET['locationLong'])
+            && isset($_GET['locationLat'])) {
             $distance = getDistance(deg2rad($locationLat),
                 deg2rad($locationLong), deg2rad($lavaLat), deg2rad($lavaLong));
         } else {
@@ -122,9 +122,9 @@ function distanceFilter($result) {
         }
         
         if ($distance <= $maxDist
-            || !isset(pg_escape_string($_GET['locationLong']))
-            || !isset(pg_escape_string($_GET['locationLat']))
-            || !isset(pg_escape_string($_GET['maxDist']))) {
+            || !isset($_GET['locationLong'])
+            || !isset($_GET['locationLat'])
+            || !isset($_GET['maxDist'])) {
             // Then we can add this row to the results
             $newEntry = array('lid' => $next['lavatory_id'],
                 'building' => $next['building_name'],
