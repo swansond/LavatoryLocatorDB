@@ -34,7 +34,7 @@ if (!$db) {
 $checkQuery = "SELECT rating FROM Review WHERE lavatory_id=$lid AND user_id=$userId";
 $checkResult = pg_query($db, $checkQuery);
 if (!$checkResult) {
-    header('HTTP/1.1 500 Server Error');
+    header('HTTP/1.1 500 Server Check Error');
     die('HTTP/1.1 500 Server Error: unable to query the server');
 }
 
@@ -45,7 +45,7 @@ if (pg_num_rows($checkResult) == 0) {
               VALUES ($lid, $userId, NOW(), '$review', $rating, 0)";
     $result = pg_query($db, $query);
     if (!$result) {
-        header('HTTP/1.1 500 Server Error');
+        header('HTTP/1.1 500 Server Insert Error');
         die('HTTP/1.1 500 Server Error: unable to query the server');
     }
     // Now we get the current review information from the Lavatory table
