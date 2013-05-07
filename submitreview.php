@@ -40,9 +40,18 @@ if (!$checkResult) {
 
 if (pg_num_rows($checkResult) == 0) {
     // User does not have review; add a new one
-    $query = "INSERT INTO Review (lavatory_id, user_id, datetime, review, 
-                                  rating, helpfulness)
-              VALUES ($lid, $userId, NOW(), '$review', $rating, 0)";
+    // first we need to manufacture a reviewID
+    $reviewQuery = "SELECT MAX(review_id) FROM Review";
+    $reviewResult = pg_query($db, $reviewQuery);
+    if (!$reviewResult) {
+        header('HTTP/1.1 500 Server Insert Check Error');
+        die('HTTP/1.1 500 Server Error: unable to query the server');
+    }
+    $idRow = pg_fetch_row($reviewResult);
+    $idMax = $idRow[0];
+    $idMax++;
+    $query = "INSERT INTO Review
+              VALUES ($idMax, $lid, $userId, NOW(), '$review', $rating, 0)";
     $result = pg_query($db, $query);
     if (!$result) {
         header('HTTP/1.1 500 Server Insert Error');
