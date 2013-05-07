@@ -48,7 +48,9 @@ if (!$db) {
 
 $queryOffset = ($pageNo - 1) * $PAGE_SIZE;
 
-$query = "SELECT * FROM Review ORDER BY $querySortMethod $ordering 
+$query = "SELECT * FROM Review 
+          WHERE lavatory_id=$lid
+          ORDER BY $querySortMethod $ordering 
           LIMIT $PAGE_SIZE OFFSET $queryOffset";
 $result = pg_query($db, $query);
 if (!$result) {
