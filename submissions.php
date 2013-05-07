@@ -76,8 +76,8 @@ while ($row = pg_fetch_row($result)) {
 						<input type='text' name='roomNumber' value='Room Number'>
 						<input type='text' name='floor' value='Floor'>
 						<input type='hidden' name='lavaType' value='A'>
-						<input type='hidden' name='longitude' value='0'>
-						<input type='hidden' name='latitude' value='0'>
+						<input type='hidden' name='longitude' value='42.42'>
+						<input type='hidden' name='latitude' value='42.42'>
 					</p>
 					<input type='submit' value='Submit Lavatory'>
 				</div>
