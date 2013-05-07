@@ -51,7 +51,7 @@ if (pg_num_rows($checkResult) == 0) {
     $idMax = $idRow[0];
     $idMax++;
     $query = "INSERT INTO Review
-              VALUES ($idMax, $lid, $userId, NOW(), '$review', $rating, 0)";
+              VALUES ($idMax, $lid, $userId, NOW(), '$review', $rating, 0, 0)";
     $result = pg_query($db, $query);
     if (!$result) {
         header('HTTP/1.1 500 Server Insert Error');
