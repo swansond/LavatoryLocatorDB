@@ -26,7 +26,7 @@ function pg_connection_string() {
 
 $db = pg_connect(pg_connection_string());
 if (!$db) {
-   header('HTTP/1.1 500 Server Error');
+   header('HTTP/1.1 500 Server Connect Error');
    die('HTTP/1.1 500 Server Error: unable to connect to the server');
 }
 
@@ -42,7 +42,7 @@ if (pg_num_rows($checkResult) == 0) {
     // User does not have review; add a new one
     $query = "INSERT INTO Review (lavatory_id, user_id, datetime, review, 
                                   rating, helpfulness)
-              VALUES ($lid, $userId, NOW(), $review, $rating, 0)";
+              VALUES ($lid, $userId, NOW(), '$review', $rating, 0)";
     $result = pg_query($db, $query);
     if (!$result) {
         header('HTTP/1.1 500 Server Error');
@@ -60,7 +60,7 @@ if (pg_num_rows($checkResult) == 0) {
                        WHERE lavatory_id=$lid";
     $updateResult = pg_query($db, $lavUpdateQuery);
     if (!$updateResult) {
-      header('HTTP/1.1 500 Server Error');
+      header('HTTP/1.1 500 Server Insert Update Error');
       die('HTTP/1.1 500 Server Error: unable to query the server');
     }
 } else {
@@ -73,7 +73,7 @@ if (pg_num_rows($checkResult) == 0) {
               SET datetime=NOW(), review='$review', rating=$rating, helpfulness=0
               WHERE lavatory_id=$lid AND user_id=$userId";
     $result = pg_query($db, $query);
-        header('HTTP/1.1 500 Server Error');
+        header('HTTP/1.1 500 Server Update Error');
     if (!$result) {
         die('HTTP/1.1 500 Server Error: unable to query the server');
     }
@@ -89,7 +89,7 @@ if (pg_num_rows($checkResult) == 0) {
                        WHERE lavatory_id=$lid";
     $updateResult = pg_query($db, $lavUpdateQuery);
     if (!$updateResult) {
-      header('HTTP/1.1 500 Server Error');
+      header('HTTP/1.1 500 Server Update Query Error');
       die('HTTP/1.1 500 Server Error: unable to query the server');
     }
 }
