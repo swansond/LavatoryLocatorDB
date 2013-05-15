@@ -6,6 +6,7 @@
 
 $review = $_POST['reviewId'];
 $uid = $_POST['uid'];
+$vote = $_POST['helpful']; // must be 1 or -1
 
 if(!$reviewID || !$uid) {
     header('HTTP/1.1 400 Invalid Request');
@@ -25,18 +26,19 @@ if (!$db) {
 }
 
 // First we have to get the current helpfulness for the review
-$query = "SELECT helpfulness FROM Review WHERE review_id=$review";
+$query = "SELECT helpfulness, total_votes FROM Review WHERE review_id=$review";
 $result = pg_query($db, $query);
 if(!$result) {
     header('HTTP/1.1 500 Server Error');
     die('HTTP/1.1 500 Server Error: unable to query the server');
 }
-$helpfulnessRow = pg_fetch_row($result)
-$helpfulness = $helpfulnessRow[0];
-
+$resultRow = pg_fetch_row($result);
+$helpfulness = $resultRow[0];
+$total_votes = $resultRow[1];
 // Now we update it
-$helpfulness++;
-$query = "UPDATE Review SET helpfulness=$helpfulness WHERE review_id=$review";
+$helpfulness += $vote;
+$total_votes++;
+$query = "UPDATE Review SET helpfulness=$helpfulness, total_votes=$total_votes WHERE review_id=$review";
 $result = pg_query($db, $query);
 if(!$result) {
     header('HTTP/1.1 500 Server Error');
@@ -44,8 +46,13 @@ if(!$result) {
 }
 
 // Finally, update the Helpful table to show 
-// this user has marked the review helpful
-$query = "INSERT INTO Helpful VALUES ($uid, $review, true)";
+// this user has marked the review
+if ($vote == 1) {
+    $vote = true;
+} else {
+    $vote = false;
+}
+$query = "INSERT INTO helpful VALUES ($uid, $review, $vote)";
 $result = pg_query($db, $query);
 if(!$result) {
     header('HTTP/1.1 500 Server Error');
