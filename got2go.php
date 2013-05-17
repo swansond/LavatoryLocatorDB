@@ -74,7 +74,7 @@ function getClosestLava($result) {
     $returnArr = array();
     $returnArr['lavatories'] = array();
     
-    // Fetch the next row as an associative array
+    // Populate the lavatories array with the query results
     while ($next = pg_fetch_array($result, NULL, PGSQL_ASSOC)) {
         $lavaLong = $next['longitude'];
         $lavaLat = $next['latitude'];
@@ -88,25 +88,24 @@ function getClosestLava($result) {
                 'building' => $next['building_name'],
                 'room' => $next['room_number'],
                 'distance' => $distance,
-                'avgRating' => $next['rating_total'] / $next['num_reviews'],
                 'reviews' => $next['num_reviews'],
                 'type' => $next['lavatory_type'],
                 'latitude' => $next['latitude'],
                 'longitude' => $next['longitude']);
 
-        // If there are no reviews, the average rating 
+        // Safely calculate the average rating
         if ($next['num_reviews'] == 0) {
             $newEntry['avgRating'] = 0;
         } else {
             $newEntry['avgRating'] = $next['rating_total']
                     / $next['num_reviews'];
         }
-            
+
         array_push($lavatories, $newEntry);
     }
     
     // Iterate through lavatories and find the lavatory with minimum distance
-    $closestLava = $lavatories(0);
+    $closestLava = $lavatories[0];
     foreach ($lavatories as $lavatory) {
         if ($closestLava['distance'] > $lavatory['distance']) {
             $closestLava = $lavatory;
