@@ -167,7 +167,7 @@ function getDistance($srcLat, $srcLong, $targetLat, $targetLong) {
     );
     $y = sqrt(
         (sin($srcLat) * sin($targetLat)) +
-        (cos($srcLat) * cos($targetLat) * cos($deltaLat))
+        (cos($srcLat) * cos($targetLat) * cos($deltaLong))
     );
     
     return atan2($x, $y) * $EARTH_RAD;
