@@ -129,14 +129,17 @@ function distanceFilter($result) {
                 'building' => $next['building_name'],
                 'room' => $next['room_number'],
                 'distance' => $distance,
-                'avgRating' => $next['rating_total'] / $next['num_reviews'],
                 'reviews' => $next['num_reviews'],
                 'type' => $next['lavatory_type'],
                 'latitude' => $next['latitude'],
                 'longitude' => $next['longitude']);
                 
+            // Safely calculate the average rating
             if ($next['num_reviews'] == 0) {
                 $newEntry['avgRating'] = 0;
+            } else {
+                $newEntry['avgRating'] = $next['rating_total']
+                        / $next['num_reviews'];
             }
             array_push($returnArr['lavatories'], $newEntry);
         }
