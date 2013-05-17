@@ -58,7 +58,7 @@ function getQueryString() {
 /** 
  * Takes an SQL query result and returns the lavatory closest to the
  * user.
- * @return the lavatory closest to the user.
+ * @return the lavatory closest to the user, in an array.
  */
 function getClosestLava($result) {
     $locationLong = $_GET['locationLong'];
@@ -67,8 +67,12 @@ function getClosestLava($result) {
     // Stores each lavatory and its distance
     $lavatories = array();
     
-    // Will eventually store the closest bathroom and will be returned.
-    $returnLava = array();
+    // Will eventually store the closest lavatory
+    $closestLava = array();
+    
+    // Used to match the output of lavasearch
+    $returnArr = array();
+    $returnArr['lavatories'] = array();
     
     // Fetch the next row as an associative array
     while ($next = pg_fetch_array($result, NULL, PGSQL_ASSOC)) {
@@ -102,14 +106,15 @@ function getClosestLava($result) {
     }
     
     // Iterate through lavatories and find the lavatory with minimum distance
-    $returnLava = $lavatories(0);
+    $closestLava = $lavatories(0);
     foreach ($lavatories as $lavatory) {
-        if ($returnLava['distance'] > $lavatory['distance']) {
-            $returnLava = $lavatory;
+        if ($closestLava['distance'] > $lavatory['distance']) {
+            $closestLava = $lavatory;
         }
     }
 
-    return $returnLava;
+    array_push($returnArr['lavatories'], $closestLava);
+    return $returnArr;
 }
 
 /**
