@@ -15,7 +15,7 @@ function pg_connection_string() {
 }
 
 // Make sure the user location has been sent
-if (!isset($_GET['locationLat']) || !isset($_GET['locationLong']) {
+if (!isset($_GET['locationLat']) || !isset($_GET['locationLong'])) {
     header('HTTP/1.1 400 Invalid Request');
     die("HTTP/1.1 400 Invalid Request: user location not given");
 }
@@ -40,7 +40,7 @@ $closestLava = getClosestLava($result);
 
 // Return the result as json.
 header('Content-type: application/json');
-print json_encode($filteredResult);
+print json_encode($closestLava);
 
 /**
  * This function returns the query string used for this request.
