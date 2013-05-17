@@ -14,18 +14,6 @@ function pg_connection_string() {
          . 'ZjdUgrXhifoZsTDsyFG sslmode=require';
 }
 
-if (!isset($_GET['bldgName'])
-    && !isset($_GET['roomNumber'])
-    && !isset($_GET['floor'])
-    && !isset($_GET['locationLat'])
-    && !isset($_GET['locationLong'])
-    && !isset($_GET['maxDist'])
-    && !isset($_GET['lavaType'])
-    && !isset($_GET['minRating'])) {
-    header('HTTP/1.1 400 Invalid Request');
-    die("HTTP/1.1 400 Invalid Request: no parameters given");
-}
-
 $db = pg_connect(pg_connection_string());
 if (!$db) {
    header('HTTP/1.1 500 Server Error');
