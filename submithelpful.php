@@ -50,9 +50,9 @@ if(!$result) {
 // Finally, update the Helpful table to show 
 // this user has marked the review
 if ($vote == 1) {
-    $vote = true;
+    $vote = "true";
 } else {
-    $vote = false;
+    $vote = "false";
 }
 $query = "INSERT INTO helpful VALUES ($uid, $review, $vote)";
 $result = pg_query($db, $query);
