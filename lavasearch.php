@@ -71,7 +71,7 @@ function getQueryString() {
     // Now we construct the query
     $query = 'SELECT Lavatory.lavatory_id, Building.building_name, '
            . 'Lavatory.room_number, Lavatory.latitude, Lavatory.longitude, '
-           . 'Lavatory.rating_total, Lavatory.num_reviews, Lavatory.floor '
+           . 'Lavatory.rating_total, Lavatory.num_reviews, Lavatory.floor, '
            . 'Lavatory.lavatory_type '
            . 'FROM Lavatory, Building '
            . 'WHERE Lavatory.building_id = Building.building_id'
