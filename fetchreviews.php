@@ -93,4 +93,5 @@ while ($next = pg_fetch_array($result, NULL, PGSQL_ASSOC)) {
     array_push($returnArr['reviews'], $newEntry);
 }
 
+header('Content-type: application/json');
 print json_encode($returnArr);

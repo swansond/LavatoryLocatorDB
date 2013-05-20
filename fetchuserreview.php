@@ -50,5 +50,6 @@ if (pg_num_rows($checkResult) != 0) {
         'rating' => $userReview['rating'],
         'helpfulness' => $userReview['helpfulness']);
     
+    header('Content-type: application/json');
     print json_encode($returnJson);
 } // If one does not exist, we return nothing.
