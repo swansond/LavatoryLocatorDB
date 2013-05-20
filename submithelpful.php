@@ -8,7 +8,7 @@ $review = $_POST['reviewId'];
 $uid = $_POST['uid'];
 $vote = $_POST['helpful']; // must be 1 or -1
 
-if(!$reviewID || !$uid) {
+if(!$review || !$uid) {
     header('HTTP/1.1 400 Invalid Request');
     die("HTTP/1.1 400 Invalid Request: no parameters given");
 }
