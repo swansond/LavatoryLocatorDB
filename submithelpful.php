@@ -4,14 +4,16 @@
 *  @author Aasav Prakash
 */
 
-$review = $_POST['reviewId'];
-$uid = $_POST['uid'];
-$vote = $_POST['helpful']; // must be 1 or -1
-
-if(!$review || !$uid) {
+if(!isset($_POST['reviewId'])
+   || !isset($_POST['uid'])
+   || !isset($_POST['helpful'])) {
     header('HTTP/1.1 400 Invalid Request');
     die("HTTP/1.1 400 Invalid Request: no parameters given");
 }
+
+$review = $_POST['reviewId'];
+$uid = $_POST['uid'];
+$vote = $_POST['helpful']; // must be 1 or -1
 
 function pg_connection_string() {
     return "dbname=dc9160dninujhs host=ec2-23-21-85-233.compute-1.amazonaws.com 
