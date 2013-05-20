@@ -120,7 +120,8 @@ function distanceFilter($result) {
                 'reviews' => $next['num_reviews'],
                 'type' => $next['lavatory_type'],
                 'latitude' => $next['latitude'],
-                'longitude' => $next['longitude']);
+                'longitude' => $next['longitude'],
+                'floor' => $next['floor']);
                 
             // Safely calculate the average rating
             if ($next['num_reviews'] == 0) {
