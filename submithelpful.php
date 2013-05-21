@@ -23,28 +23,36 @@ function pg_connection_string() {
 
 $db = pg_connect(pg_connection_string());
 if (!$db) {
-   header('HTTP/1.1 500 Server Error');
-   die('HTTP/1.1 500 Server Error: unable to connect to the server');
+   header('HTTP/1.1 501 Server Error');
+   die('HTTP/1.1 501 Server Error: unable to connect to the server');
 }
 
 // First we have to get the current helpfulness for the review
 $query = "SELECT helpfulness, total_votes FROM Review WHERE review_id=$review";
 $result = pg_query($db, $query);
 if(!$result) {
-    header('HTTP/1.1 500 Server Error');
-    die('HTTP/1.1 500 Server Error: unable to query the server');
+    header('HTTP/1.1 502 Server Error');
+    die('HTTP/1.1 502 Server Error: unable to query the server');
 }
 $resultRow = pg_fetch_row($result);
+
+if (!$resultRow) {
+    die();
+}
+
 $helpfulness = $resultRow[0];
 $total_votes = $resultRow[1];
+
 // Now we update it
 $helpfulness += $vote;
 $total_votes++;
+
+// Set up the string to update the database
 $query = "UPDATE Review SET helpfulness=$helpfulness, total_votes=$total_votes WHERE review_id=$review";
 $result = pg_query($db, $query);
 if(!$result) {
-    header('HTTP/1.1 500 Server Error');
-    die('HTTP/1.1 500 Server Error: unable to query the server');
+    header('HTTP/1.1 503 Server Error');
+    die('HTTP/1.1 503 Server Error: unable to query the server');
 }
 
 // Finally, update the Helpful table to show 
@@ -57,6 +65,6 @@ if ($vote == 1) {
 $query = "INSERT INTO helpful VALUES ($uid, $review, $vote)";
 $result = pg_query($db, $query);
 if(!$result) {
-    header('HTTP/1.1 500 Server Error');
-    die('HTTP/1.1 500 Server Error: unable to query the server');
+    header('HTTP/1.1 504 Server Error');
+    die('HTTP/1.1 504 Server Error: unable to query the server');
 }
