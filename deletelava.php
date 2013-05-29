@@ -27,7 +27,7 @@ if (!$db) {
    die('HTTP/1.1 500 Server Error: unable to connect to the server');
 }
 
-$request = "Lavatory ID: 123";
+$request = "Lavatory ID: $lavatoryid";
 if ($uid) {
     $request .= "; User ID: $uid";
 }
