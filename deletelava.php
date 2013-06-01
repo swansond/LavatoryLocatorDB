@@ -7,7 +7,7 @@
 $uid = $_POST['uid'];
 $lavatory = $_POST['lavatoryid'];
 
-if (!$lavatory) {
+if (!ISSET($_POST['lavatoryid'])) {
     header('HTTP/1.1 400 Invalid Request');
     die('HTTP/1.1 400 Invalid Request: Missing required parameter: lavatoryid');
 }
