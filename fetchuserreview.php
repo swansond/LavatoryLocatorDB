@@ -7,10 +7,10 @@
 */
 
 
-$lid = $_GET['lid'];
-$uid = $_GET['uid'];
+$lid = pg_escape_string($_GET['lid']);
+$uid = pg_escape_string($_GET['uid']);
 
-if (!$lid || !$uid) {
+if (!ISSET($_GET['lid']) || !ISSET($_GET['uid'])) {
     header('HTTP/1.1 400 Invalid Request');
     die('HTTP/1.1 400 Invalid Request: Missing required parameters');
 }
