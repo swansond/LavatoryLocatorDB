@@ -4,13 +4,14 @@
 *  @author Aasav Prakash
 */
 
-$review = $_POST['reviewId'];
-$uid = $_POST['uid'];
-$vote = $_POST['helpful']; // must be 1 or -1
+$review = pg_escape_string($_POST['reviewId']);
+$uid = pg_escape_string($_POST['uid']);
+$vote = pg_escape_string($_POST['helpful']); // must be 1 or -1
 
-if(!$reviewID || !$uid) {
+if(!ISSET($_POST['reviewId']) || !ISSET($_POST['uid']) ||
+    !ISSET($_POST['helpful'])) {
     header('HTTP/1.1 400 Invalid Request');
-    die("HTTP/1.1 400 Invalid Request: no parameters given");
+    die("HTTP/1.1 400 Invalid Request: Missing required parameters");
 }
 
 function pg_connection_string() {
@@ -32,6 +33,7 @@ if(!$result) {
     header('HTTP/1.1 500 Server Error');
     die('HTTP/1.1 500 Server Error: unable to query the server');
 }
+
 $resultRow = pg_fetch_row($result);
 $helpfulness = $resultRow[0];
 $total_votes = $resultRow[1];
@@ -52,7 +54,7 @@ if ($vote == 1) {
 } else {
     $vote = false;
 }
-$query = "INSERT INTO helpful VALUES ($uid, $review, $vote)";
+$query = "INSERT INTO helpful VALUES ($uid, $review, '$vote')";
 $result = pg_query($db, $query);
 if(!$result) {
     header('HTTP/1.1 500 Server Error');
