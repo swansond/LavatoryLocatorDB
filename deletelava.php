@@ -28,9 +28,11 @@ if (!$db) {
 }
 
 $request = "Lavatory ID: $lavatory";
-if (ISSET($_POST['uid'])) {
-    $request .= "; User ID: $uid";
+if (!ISSET($_POST['uid'])) {
+    $uid = "Unknown";
 }
+
+$request .= "; User ID: $uid";
 
 // request type and request itself
 $query = "INSERT INTO Queue VALUES ('Delete lavatory', '$request')";
