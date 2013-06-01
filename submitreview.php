@@ -5,14 +5,15 @@
 *  @author Aasav Prakash
 */
 
-$lid = $_POST['lid'];
-$rating = $_POST['rating'];
+$lid = pg_escape_string($_POST['lid']);
+$rating = pg_escape_string($_POST['rating']);
 $review = pg_escape_string($_POST['review']);
-$userId = $_POST['uid'];
+$userId = pg_escape_string($_POST['uid']);
 
-if (!$lid || !$rating || !$review || !$userId) {
+if (!ISSET($_POST['lid']) || !ISSET($_POST['rating']) || 
+    !ISSET($_POST['uid'])) {
     header('HTTP/1.1 400 Invalid Request');
-	die('HTTP/1.1 400 Invalid Request: Missing required parameters');
+    die('HTTP/1.1 400 Invalid Request: Missing required parameters. lid, rating, and uid required');
 }
 
 /**
@@ -30,6 +31,26 @@ if (!$db) {
    die('HTTP/1.1 500 Server Error: unable to connect to the server');
 }
 
+// Check if user is in database already
+$acctQuery = "SELECT * FROM Account WHERE user_id=$userId";
+$acctResult = pg_query($db, $acctQuery);
+if (!$acctResult) {
+    header('HTTP/1.1 500 Server Check Error');
+    die('HTTP/1.1 500 Server Error: unable to query the server');
+}
+
+// If there is no account entry, add one
+if (pg_num_rows($acctResult) == 0) {
+    $userQuery = "INSERT INTO Account VALUES ($userId)";
+    $userResult = pg_query($db, $userQuery);
+    if (!$userResult) {
+        header('HTTP/1.1 500 Server Check Error');
+        die('HTTP/1.1 500 Server Error: unable to query the server');
+    }
+}
+
+
+
 // Check if the user already has a review
 $checkQuery = "SELECT rating FROM Review WHERE lavatory_id=$lid AND user_id=$userId";
 $checkResult = pg_query($db, $checkQuery);
@@ -40,18 +61,10 @@ if (!$checkResult) {
 
 if (pg_num_rows($checkResult) == 0) {
     // User does not have review; add a new one
-    // first we need to manufacture a reviewID
-    $reviewQuery = "SELECT MAX(review_id) FROM Review";
-    $reviewResult = pg_query($db, $reviewQuery);
-    if (!$reviewResult) {
-        header('HTTP/1.1 500 Server Insert Check Error');
-        die('HTTP/1.1 500 Server Error: unable to query the server');
-    }
-    $idRow = pg_fetch_row($reviewResult);
-    $idMax = $idRow[0];
-    $idMax++;
-    $query = "INSERT INTO Review
-              VALUES ($idMax, $lid, $userId, NOW(), '$review', $rating, 0, 0)";
+    $query = "INSERT INTO 
+              Review (lavatory_id, user_id, datetime, review, 
+                      rating, helpfulness, total_votes)
+              VALUES ($lid, $userId, NOW(), '$review', $rating, 0, 0)";
     $result = pg_query($db, $query);
     if (!$result) {
         header('HTTP/1.1 500 Server Insert Error');
