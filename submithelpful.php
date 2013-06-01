@@ -47,6 +47,25 @@ if(!$result) {
     die('HTTP/1.1 500 Server Error: unable to query the server');
 }
 
+
+// Check if user is in database already
+$acctQuery = "SELECT * FROM Account WHERE user_id=$uid";
+$acctResult = pg_query($db, $acctQuery);
+if (!$acctResult) {
+    header('HTTP/1.1 500 Server Check Error');
+    die('HTTP/1.1 500 Server Error: unable to query the server');
+}
+
+// If there is no account entry, add one
+if (pg_num_rows($acctResult) == 0) {
+    $userQuery = "INSERT INTO Account VALUES ($uid)";
+    $userResult = pg_query($db, $userQuery);
+    if (!$userResult) {
+        header('HTTP/1.1 500 Server Check Error');
+        die('HTTP/1.1 500 Server Error: unable to query the server');
+    }
+}
+
 // Finally, update the Helpful table to show 
 // this user has marked the review
 if ($vote == 1) {
