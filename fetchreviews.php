@@ -9,13 +9,14 @@
 // The number of reviews per page of results
 $PAGE_SIZE = 10;
 
-$lid =        $_GET['lid'];
-$pageNo =     $_GET['pageNo'];
-$sortMethod = $_GET['sortparam'];
-$sortDir =    $_GET['direction'];
-$uid =        $_GET['uid'];
+$lid =        pg_escape_string($_GET['lid']);
+$pageNo =     pg_escape_string($_GET['pageNo']);
+$sortMethod = pg_escape_string($_GET['sortparam']);
+$sortDir =    pg_escape_string($_GET['direction']);
+$uid =        pg_escape_string($_GET['uid']);
 
-if (!$lid || !$pageNo || !$sortMethod || !$sortDir) {
+if (!ISSET($_GET['lid']) || !ISSET($_GET['pageNo']) ||
+    !ISSET($_GET['sortparam']) || !ISSET($_GET['direction'])) {
     header('HTTP/1.1 400 Invalid Request');
     die('HTTP/1.1 400 Invalid Request: Missing required parameters');
 }
