@@ -50,8 +50,8 @@ if (!$db) {
 
 $queryOffset = ($pageNo - 1) * $PAGE_SIZE;
 
-$query = "SELECT * FROM Review 
-          WHERE lavatory_id=$lid
+$query = "SELECT * FROM Review, Account 
+          WHERE Review.lavatory_id=$lid AND Account.user_id=Review.user_id
           ORDER BY $querySortMethod $ordering 
           LIMIT $PAGE_SIZE OFFSET $queryOffset";
 $result = pg_query($db, $query);
@@ -66,6 +66,7 @@ while ($next = pg_fetch_array($result, NULL, PGSQL_ASSOC)) {
     $newEntry = array('rid' => $next['review_id'],
         'lid' => $next['lavatory_id'],
         'uid' => $next['user_id'],
+        'username' => $next['username'],
         'datetime' => $next['datetime'],
         'review' => $next['review'],
         'rating' => $next['rating'],
