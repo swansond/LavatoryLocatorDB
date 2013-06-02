@@ -4,13 +4,13 @@
 *  @author Aasav Prakash
 */
 
-$uid = $_POST['uid'];
-$lavatory = $_POST['lavatoryid'];
-
-if (!$lavatory) {
+if (!ISSET($_POST['lavatoryid'])) {
     header('HTTP/1.1 400 Invalid Request');
     die('HTTP/1.1 400 Invalid Request: Missing required parameter: lavatoryid');
 }
+
+$uid = pg_escape_string($_POST['uid']);
+$lavatory = pg_escape_string($_POST['lavatoryid']);
 
 /**
  * @return the string used to connect to the postgres server
@@ -27,10 +27,12 @@ if (!$db) {
    die('HTTP/1.1 500 Server Error: unable to connect to the server');
 }
 
-$request = "Lavatory ID: $lavatoryid";
-if ($uid) {
-    $request .= "; User ID: $uid";
+$request = "Lavatory ID: $lavatory";
+if (!ISSET($_POST['uid'])) {
+    $uid = "Unknown";
 }
+
+$request .= "; User ID: $uid";
 
 // request type and request itself
 $query = "INSERT INTO Queue VALUES ('Delete lavatory', '$request')";

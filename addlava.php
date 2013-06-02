@@ -4,14 +4,16 @@
 *  @author Aasav Prakash
 */
 
-$uid = $_POST['uid'];
-$buildingName = $_POST['buildingName'];
-$floor = $_POST['floor'];
-$lavaType = $_POST['lavaType'];
-$long = $_POST['longitude'];
-$lat = $_POST['latitude'];
+$uid = pg_escape_string($_POST['uid']);
+$buildingName = pg_escape_string($_POST['buildingName']);
+$floor = pg_escape_string($_POST['floor']);
+$lavaType = pg_escape_string($_POST['lavaType']);
+$long = pg_escape_string($_POST['longitude']);
+$lat = pg_escape_string($_POST['latitude']);
 
-if (!$uid || !$buildingName || !$floor || !$lavaType || !$long || !$lat) {
+if (!ISSET($_POST['uid']) || !ISSET($_POST['buildingName']) ||
+    !ISSET($_POST['floor']) || !ISSET($_POST['longitude']) || 
+    !ISSET($_POST['latitude'])) {
     header('HTTP/1.1 400 Invalid Request');
     die('HTTP/1.1 400 Invalid Request: Missing required parameters');
 }
