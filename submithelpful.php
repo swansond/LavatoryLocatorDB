@@ -27,6 +27,31 @@ if (!$db) {
    die('HTTP/1.1 501 Server Error: unable to connect to the server');
 }
 
+// Check if user is in database already
+// We do this first iso that in case of an error, nothing gets changed
+$acctQuery = "SELECT * FROM Account WHERE user_id=$uid";
+$acctResult = pg_query($db, $acctQuery);
+if (!$acctResult) {
+    header('HTTP/1.1 500 Server Check Error');
+    die('HTTP/1.1 500 Server Error: unable to query the server');
+}
+
+// If there is no account entry, add one
+if (pg_num_rows($acctResult) == 0) {
+    if (!ISSET($_POST['username'])) {
+        header('HTTP/1.1 400 Invalid Request');
+        die("HTTP/1.1 400 Invalid Request: Missing required parameter: username");
+    }
+    $username = pg_escape_string($_POST['username']);
+    $userQuery = "INSERT INTO Account VALUES ($uid, '$username')";
+    $userResult = pg_query($db, $userQuery);
+    if (!$userResult) {
+        header('HTTP/1.1 500 Server Check Error');
+        die('HTTP/1.1 500 Server Error: unable to query the server');
+    }
+}
+
+
 // First we have to get the current helpfulness for the review
 $query = "SELECT helpfulness, total_votes FROM Review WHERE review_id=$review";
 $result = pg_query($db, $query);
@@ -49,31 +74,14 @@ $helpfulness += $vote;
 $total_votes++;
 
 // Set up the string to update the database
-$query = "UPDATE Review SET helpfulness=$helpfulness, total_votes=$total_votes WHERE review_id=$review";
+$query = "UPDATE Review SET helpfulness=$helpfulness, total_votes=$total_votes
+          WHERE review_id=$review";
 $result = pg_query($db, $query);
 if(!$result) {
     header('HTTP/1.1 503 Server Error');
     die('HTTP/1.1 503 Server Error: unable to query the server');
 }
 
-
-// Check if user is in database already
-$acctQuery = "SELECT * FROM Account WHERE user_id=$uid";
-$acctResult = pg_query($db, $acctQuery);
-if (!$acctResult) {
-    header('HTTP/1.1 500 Server Check Error');
-    die('HTTP/1.1 500 Server Error: unable to query the server');
-}
-
-// If there is no account entry, add one
-if (pg_num_rows($acctResult) == 0) {
-    $userQuery = "INSERT INTO Account VALUES ($uid)";
-    $userResult = pg_query($db, $userQuery);
-    if (!$userResult) {
-        header('HTTP/1.1 500 Server Check Error');
-        die('HTTP/1.1 500 Server Error: unable to query the server');
-    }
-}
 
 // Finally, update the Helpful table to show 
 // this user has marked the review

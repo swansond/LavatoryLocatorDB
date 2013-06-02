@@ -13,7 +13,7 @@ $userId = pg_escape_string($_POST['uid']);
 if (!ISSET($_POST['lid']) || !ISSET($_POST['rating']) || 
     !ISSET($_POST['uid'])) {
     header('HTTP/1.1 400 Invalid Request');
-    die('HTTP/1.1 400 Invalid Request: Missing required parameters. lid, rating, and uid required');
+    die('HTTP/1.1 400 Invalid Request: Missing required parameters.');
 }
 
 /**
@@ -32,6 +32,7 @@ if (!$db) {
 }
 
 // Check if user is in database already
+// We do this first iso that in case of an error, nothing gets changed
 $acctQuery = "SELECT * FROM Account WHERE user_id=$userId";
 $acctResult = pg_query($db, $acctQuery);
 if (!$acctResult) {
@@ -41,7 +42,12 @@ if (!$acctResult) {
 
 // If there is no account entry, add one
 if (pg_num_rows($acctResult) == 0) {
-    $userQuery = "INSERT INTO Account VALUES ($userId)";
+    if (!ISSET($_POST['username'])) {
+        header('HTTP/1.1 400 Invalid Request');
+        die("HTTP/1.1 400 Invalid Request: Missing required parameter: username");
+    }
+    $username = pg_escape_string($_POST['username']);
+    $userQuery = "INSERT INTO Account VALUES ($userId, '$username')";
     $userResult = pg_query($db, $userQuery);
     if (!$userResult) {
         header('HTTP/1.1 500 Server Check Error');
