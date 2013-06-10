@@ -69,6 +69,10 @@ if (!$resultRow) {
 $helpfulness = $resultRow[0];
 $total_votes = $resultRow[1];
 
+if ($vote == -1) {
+    $vote = 0;
+}
+
 // Now we update it
 $helpfulness += $vote;
 $total_votes++;

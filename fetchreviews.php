@@ -70,7 +70,8 @@ while ($next = pg_fetch_array($result, NULL, PGSQL_ASSOC)) {
         'datetime' => $next['datetime'],
         'review' => $next['review'],
         'rating' => $next['rating'],
-        'helpfulness' => $next['helpfulness']);
+        'helpfulness' => $next['helpfulness'],
+        'totalvotes' => $next['total_votes']);
     // If a user ID was supplied, see if they marked this review (un)helpful
     if (isset($_GET['uid'])) {
         $rid = $newEntry['rid'];
