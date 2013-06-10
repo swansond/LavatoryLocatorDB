@@ -2,6 +2,7 @@
 <head>
 </head>
 <body>
+    <p>Download all of the files <a href="loadtests.zip">here</a></p>
     <h1>Lavatory Locator: Load Test Results</h1>
     <dl>
         <dt>Server Test</dt>
